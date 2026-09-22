@@ -1,10 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Users, Shield, Activity, UserPlus, Search, Filter, 
-  RefreshCw, CheckCircle2, XCircle, AlertTriangle, Key, 
-  FileText, Download, Edit2, Trash2, Lock, Eye, LogIn, 
-  ShoppingBag, Truck, DollarSign, Database, ChevronRight, X
+  Users, Shield, Activity, UserPlus, Search, 
+  RefreshCw, CheckCircle2, XCircle, AlertTriangle, 
+  Download, Edit2, Trash2, Lock, Eye, LogIn, 
+  ShoppingBag, Truck, DollarSign, ChevronRight, X
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Badge } from '../components/ui/Badge';
+import { Modal } from '../components/ui/Modal';
+import { Input } from '../components/ui/Input';
+import { Select } from '../components/ui/Select';
 import { api } from '../api/client';
 
 export default function UsersAuditPage({ currentUser }) {
@@ -37,11 +43,11 @@ export default function UsersAuditPage({ currentUser }) {
   const [selectedLogDetail, setSelectedLogDetail] = useState(null);
 
   // Toast / notification
-  const [notification, setNotification] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   const showNotification = (type, message) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 4000);
+    setFeedback({ type, message });
+    setTimeout(() => setFeedback(null), 4000);
   };
 
   // Load Users
@@ -230,145 +236,144 @@ export default function UsersAuditPage({ currentUser }) {
     showNotification('success', 'Журнал аудита успешно экспортирован в CSV');
   };
 
-  // Role Badge Helper
+  // Role Badge
   const renderRoleBadge = (role) => {
     switch (role) {
       case 'admin':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
-            <Shield className="w-3 h-3 text-purple-600" />
+          <Badge variant="outline" className="border-indigo-500/40 text-indigo-400 bg-indigo-500/10 text-[11px] font-medium">
+            <Shield className="w-3 h-3 mr-1" />
             Администратор
-          </span>
+          </Badge>
         );
       case 'operator':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            <Truck className="w-3 h-3 text-blue-600" />
+          <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 text-[11px] font-medium">
+            <Truck className="w-3 h-3 mr-1" />
             Оператор склада
-          </span>
+          </Badge>
         );
       case 'accountant':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <DollarSign className="w-3 h-3 text-emerald-600" />
+          <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[11px] font-medium">
+            <DollarSign className="w-3 h-3 mr-1" />
             Бухгалтер
-          </span>
+          </Badge>
         );
       case 'viewer':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-            <Eye className="w-3 h-3 text-slate-500" />
+          <Badge variant="outline" className="border-border text-muted-foreground text-[11px]">
+            <Eye className="w-3 h-3 mr-1" />
             Наблюдатель
-          </span>
+          </Badge>
         );
     }
   };
 
-  // Action Badge Helper for Audit Log
+  // Action Badge for Audit Log
   const renderActionBadge = (action) => {
     if (action.startsWith('LOGIN_SUCCESS')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-          <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Вход в систему
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          <CheckCircle2 className="w-3 h-3" /> Вход в систему
         </span>
       );
     }
     if (action.startsWith('LOGIN_FAILED') || action.startsWith('LOGIN_BLOCKED')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
-          <AlertTriangle className="w-3 h-3 text-rose-600" /> Ошибка входа
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-destructive/15 text-destructive border border-destructive/30">
+          <AlertTriangle className="w-3 h-3" /> Ошибка входа
         </span>
       );
     }
     if (action.startsWith('SALE')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
-          <ShoppingBag className="w-3 h-3 text-indigo-600" /> Продажа
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-500/15 text-blue-400 border border-blue-500/30">
+          <ShoppingBag className="w-3 h-3" /> Продажа
         </span>
       );
     }
     if (action.startsWith('ARRIVAL') || action.startsWith('TICKET')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
-          <Truck className="w-3 h-3 text-amber-600" /> Склад / Тикет
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30">
+          <Truck className="w-3 h-3" /> Склад / Тикет
         </span>
       );
     }
     if (action.startsWith('FINANCE') || action.startsWith('DEBT')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
-          <DollarSign className="w-3 h-3 text-teal-600" /> Касса / Долг
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-teal-500/15 text-teal-400 border border-teal-500/30">
+          <DollarSign className="w-3 h-3" /> Касса / Долг
         </span>
       );
     }
     if (action.startsWith('USER')) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-          <Users className="w-3 h-3 text-purple-600" /> Пользователи
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+          <Users className="w-3 h-3" /> Пользователи
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-        <Activity className="w-3 h-3 text-slate-500" /> {action}
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-muted text-muted-foreground border border-border">
+        <Activity className="w-3 h-3" /> {action}
       </span>
     );
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-5 animate-in fade-in duration-200">
       {/* Toast Notification */}
-      {notification && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border text-sm font-medium transition-all ${
-          notification.type === 'error'
-            ? 'bg-rose-50 text-rose-800 border-rose-200 shadow-rose-100'
-            : 'bg-emerald-50 text-emerald-800 border-emerald-200 shadow-emerald-100'
-        }`}>
-          {notification.type === 'error' ? <AlertTriangle className="w-4 h-4 text-rose-600" /> : <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-          <span>{notification.message}</span>
+      {feedback && (
+        <div
+          className={`flex items-center gap-2 p-3 rounded-xl border text-xs font-medium animate-in fade-in ${
+            feedback.type === 'error'
+              ? 'bg-destructive/10 border-destructive/20 text-destructive'
+              : 'bg-muted border-border text-foreground'
+          }`}
+        >
+          {feedback.type === 'error' ? <AlertTriangle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
+          <span>{feedback.message}</span>
         </div>
       )}
 
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-            <Shield className="w-6 h-6 text-indigo-600" />
-            Центр управления и безопасности
+          <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
+            Пользователи и Аудит
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Управление учетными записями персонала, ролями доступа и прозрачный аудит всех действий в системе
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Управление учетными записями персонала и журнал всех действий в системе
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200">
+        <div className="inline-flex items-center rounded-lg border border-border bg-muted p-1 text-muted-foreground text-xs">
           <button
             onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-all ${
               activeTab === 'users'
-                ? 'bg-white text-slate-900 shadow-sm border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-background text-foreground shadow-sm font-semibold'
+                : 'hover:text-foreground'
             }`}
           >
-            <Users className="w-4 h-4" />
-            Пользователи
-            <span className="ml-1 px-1.5 py-0.2 bg-slate-200 text-slate-700 rounded-full text-xs font-bold">
-              {users.length}
-            </span>
+            <Users className="w-3.5 h-3.5" />
+            Пользователи ({users.length})
           </button>
           <button
             onClick={() => setActiveTab('audit')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-all ${
               activeTab === 'audit'
-                ? 'bg-white text-slate-900 shadow-sm border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-background text-foreground shadow-sm font-semibold'
+                : 'hover:text-foreground'
             }`}
           >
-            <Activity className="w-4 h-4" />
+            <Activity className="w-3.5 h-3.5" />
             Журнал аудита
-            <span className="ml-1 px-1.5 py-0.2 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-primary/20 text-primary">
               Live
             </span>
           </button>
@@ -377,561 +382,542 @@ export default function UsersAuditPage({ currentUser }) {
 
       {/* TAB 1: USERS MANAGEMENT */}
       {activeTab === 'users' && (
-        <div className="space-y-5">
-          {/* Top Action Bar */}
+        <div className="space-y-4">
+          {/* Top KPI row */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1">
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-medium text-slate-500">Всего аккаунтов</span>
-                <p className="text-xl font-bold text-slate-900 mt-0.5">{users.length}</p>
-              </div>
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-medium text-slate-500">Активных</span>
-                <p className="text-xl font-bold text-emerald-600 mt-0.5">
+              <Card className="border-border p-3.5">
+                <span className="text-[11px] font-medium text-muted-foreground">Всего аккаунтов</span>
+                <p className="text-xl font-bold text-foreground mt-0.5">{users.length}</p>
+              </Card>
+              <Card className="border-border p-3.5">
+                <span className="text-[11px] font-medium text-muted-foreground">Активных</span>
+                <p className="text-xl font-bold text-emerald-500 mt-0.5">
                   {users.filter(u => u.status === 'active').length}
                 </p>
-              </div>
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-medium text-slate-500">Администраторов</span>
-                <p className="text-xl font-bold text-purple-600 mt-0.5">
+              </Card>
+              <Card className="border-border p-3.5">
+                <span className="text-[11px] font-medium text-muted-foreground">Администраторов</span>
+                <p className="text-xl font-bold text-indigo-400 mt-0.5">
                   {users.filter(u => u.role === 'admin').length}
                 </p>
-              </div>
-              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-medium text-slate-500">Операторов & Кассы</span>
-                <p className="text-xl font-bold text-blue-600 mt-0.5">
+              </Card>
+              <Card className="border-border p-3.5">
+                <span className="text-[11px] font-medium text-muted-foreground">Операторы & Касса</span>
+                <p className="text-xl font-bold text-primary mt-0.5">
                   {users.filter(u => u.role === 'operator' || u.role === 'accountant').length}
                 </p>
-              </div>
+              </Card>
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-center">
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={loadUsers}
                 disabled={usersLoading}
-                className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
+                className="h-8 w-8"
                 title="Обновить список"
               >
-                <RefreshCw className={`w-4 h-4 ${usersLoading ? 'animate-spin' : ''}`} />
-              </button>
-              <button
+                <RefreshCw className={`w-3.5 h-3.5 ${usersLoading ? 'animate-spin' : ''}`} />
+              </Button>
+              <Button
                 onClick={handleOpenCreateUser}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-sm transition"
+                className="h-8 px-3 text-xs font-medium"
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="w-3.5 h-3.5 mr-1.5" />
                 Добавить пользователя
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Users Table */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    <th className="py-3.5 px-4">Сотрудник / ФИО</th>
-                    <th className="py-3.5 px-4">Логин</th>
-                    <th className="py-3.5 px-4">Роль доступа</th>
-                    <th className="py-3.5 px-4">Телефон</th>
-                    <th className="py-3.5 px-4">Последний вход</th>
-                    <th className="py-3.5 px-4">Статус</th>
-                    <th className="py-3.5 px-4 text-right">Действия</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {usersLoading && users.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="py-12 text-center text-slate-400">
-                        <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-500" />
-                        Загрузка пользователей...
-                      </td>
+          <Card className="border-border">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-border text-muted-foreground font-medium bg-muted/30">
+                      <th className="py-2.5 px-4">Сотрудник / ФИО</th>
+                      <th className="py-2.5 px-3">Логин</th>
+                      <th className="py-2.5 px-3">Роль доступа</th>
+                      <th className="py-2.5 px-3">Телефон</th>
+                      <th className="py-2.5 px-3">Последний вход</th>
+                      <th className="py-2.5 px-3">Статус</th>
+                      <th className="py-2.5 px-4 text-right">Действия</th>
                     </tr>
-                  ) : users.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="py-12 text-center text-slate-400">
-                        Пользователи не найдены
-                      </td>
-                    </tr>
-                  ) : (
-                    users.map((u) => (
-                      <tr key={u.id} className="hover:bg-slate-50/60 transition">
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs border border-slate-200">
-                              {u.full_name?.charAt(0) || 'U'}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-slate-900">{u.full_name}</div>
-                              <div className="text-xs text-slate-500">{u.role_title || 'Сотрудник'}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="font-mono text-xs font-semibold text-indigo-600 bg-indigo-50/70 px-2 py-1 rounded">
-                            @{u.username}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4">
-                          {renderRoleBadge(u.role)}
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-600">
-                          {u.phone || '—'}
-                        </td>
-                        <td className="py-3.5 px-4 text-xs text-slate-500">
-                          {u.last_login ? u.last_login : 'Не входил'}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          {u.status === 'active' ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Активен
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
-                              <XCircle className="w-3 h-3 text-rose-600" /> Заблокирован
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => handleOpenEditUser(u)}
-                              className="p-1.5 rounded-md hover:bg-slate-100 text-slate-600 hover:text-indigo-600 transition"
-                              title="Редактировать пользователя"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-
-                            {u.username !== 'admin' && (
-                              <>
-                                <button
-                                  onClick={() => handleToggleUserStatus(u)}
-                                  className={`p-1.5 rounded-md transition ${
-                                    u.status === 'active' 
-                                      ? 'hover:bg-amber-50 text-slate-500 hover:text-amber-600'
-                                      : 'hover:bg-emerald-50 text-slate-500 hover:text-emerald-600'
-                                  }`}
-                                  title={u.status === 'active' ? 'Заблокировать' : 'Разблокировать'}
-                                >
-                                  <Lock className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteUser(u)}
-                                  className="p-1.5 rounded-md hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition"
-                                  title="Удалить аккаунт"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
-                          </div>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {usersLoading && users.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="py-10 text-center text-muted-foreground">
+                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-primary" />
+                          Загрузка пользователей...
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                    ) : users.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="py-10 text-center text-muted-foreground">
+                          Пользователи не найдены
+                        </td>
+                      </tr>
+                    ) : (
+                      users.map((u) => (
+                        <tr key={u.id} className="hover:bg-muted/50 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-8 h-8 rounded-full bg-muted border border-border text-foreground flex items-center justify-center font-bold text-xs shrink-0">
+                                {u.full_name?.charAt(0) || 'U'}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-foreground">{u.full_name}</div>
+                                <div className="text-[11px] text-muted-foreground">{u.role_title || 'Сотрудник'}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className="font-mono text-[11px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                              @{u.username}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3">
+                            {renderRoleBadge(u.role)}
+                          </td>
+                          <td className="py-3 px-3 text-muted-foreground">
+                            {u.phone || '—'}
+                          </td>
+                          <td className="py-3 px-3 text-muted-foreground">
+                            {u.last_login ? u.last_login : 'Не входил'}
+                          </td>
+                          <td className="py-3 px-3">
+                            {u.status === 'active' ? (
+                              <Badge variant="outline" className="border-emerald-500/40 text-emerald-500 bg-emerald-500/10 text-[10px]">
+                                <CheckCircle2 className="w-3 h-3 mr-1" /> Активен
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="border-destructive/40 text-destructive bg-destructive/10 text-[10px]">
+                                <XCircle className="w-3 h-3 mr-1" /> Заблокирован
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() => handleOpenEditUser(u)}
+                                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                title="Редактировать пользователя"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+
+                              {u.username !== 'admin' && (
+                                <>
+                                  <button
+                                    onClick={() => handleToggleUserStatus(u)}
+                                    className={`p-1 rounded-md transition-colors ${
+                                      u.status === 'active' 
+                                        ? 'text-muted-foreground hover:text-amber-500 hover:bg-muted'
+                                        : 'text-muted-foreground hover:text-emerald-500 hover:bg-muted'
+                                    }`}
+                                    title={u.status === 'active' ? 'Заблокировать' : 'Разблокировать'}
+                                  >
+                                    <Lock className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteUser(u)}
+                                    className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
+                                    title="Удалить аккаунт"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
       {/* TAB 2: AUDIT & ACTIVITY LOG */}
       {activeTab === 'audit' && (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Top Metrics Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <Card className="border-border p-3.5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500">Событий за сегодня</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{auditStats.total_today || 0}</p>
+                <p className="text-[11px] font-medium text-muted-foreground">Событий за сегодня</p>
+                <p className="text-xl font-bold text-foreground mt-0.5">{auditStats.total_today || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <Activity className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Activity className="w-4 h-4" />
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <Card className="border-border p-3.5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500">Входов в систему</p>
-                <p className="text-2xl font-bold text-emerald-600 mt-1">{auditStats.logins_today || 0}</p>
+                <p className="text-[11px] font-medium text-muted-foreground">Входов в систему</p>
+                <p className="text-xl font-bold text-emerald-500 mt-0.5">{auditStats.logins_today || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <LogIn className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <LogIn className="w-4 h-4" />
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <Card className="border-border p-3.5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500">Складских и продаж</p>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{auditStats.operations_today || 0}</p>
+                <p className="text-[11px] font-medium text-muted-foreground">Склад и Продажи</p>
+                <p className="text-xl font-bold text-blue-400 mt-0.5">{auditStats.operations_today || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                <ShoppingBag className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                <ShoppingBag className="w-4 h-4" />
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <Card className="border-border p-3.5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500">Предупреждений / Сбоев</p>
-                <p className="text-2xl font-bold text-rose-600 mt-1">{auditStats.security_alerts || 0}</p>
+                <p className="text-[11px] font-medium text-muted-foreground">Предупреждений / Сбоев</p>
+                <p className="text-xl font-bold text-destructive mt-0.5">{auditStats.security_alerts || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
-                <AlertTriangle className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive">
+                <AlertTriangle className="w-4 h-4" />
               </div>
-            </div>
+            </Card>
           </div>
 
-          {/* Search, Filters, and Export */}
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-            <div className="flex flex-1 flex-col sm:flex-row gap-2.5">
-              {/* Search Bar */}
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  value={auditSearch}
-                  onChange={(e) => setAuditSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && loadAudit()}
-                  placeholder="Поиск по действию, объекту, описанию или IP..."
-                  className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
+          {/* Search, Filters & Export */}
+          <Card className="border-border">
+            <CardContent className="p-3.5 flex flex-col md:flex-row gap-2.5 items-stretch md:items-center justify-between">
+              <div className="flex flex-1 flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={auditSearch}
+                    onChange={(e) => setAuditSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && loadAudit()}
+                    placeholder="Поиск по действию, объекту или IP..."
+                    className="flex h-8 w-full rounded-lg border border-input bg-card px-3 py-1 text-xs text-foreground placeholder:text-muted-foreground/60 pl-8 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  />
+                </div>
+
+                <select
+                  value={selectedAction}
+                  onChange={(e) => setSelectedAction(e.target.value)}
+                  className="h-8 rounded-lg border border-input bg-card px-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">Все типы действий</option>
+                  <option value="LOGIN_SUCCESS">Вход в систему</option>
+                  <option value="LOGIN_FAILED">Ошибка входа</option>
+                  <option value="SALE_CREATE">Оформление сделок</option>
+                  <option value="ARRIVAL_CREATE">Оприходование склада</option>
+                  <option value="TICKET_RETURN">Возврат тикетов</option>
+                  <option value="FINANCE_INCOME">Приход в кассу</option>
+                  <option value="FINANCE_EXPENSE">Расход из кассы</option>
+                  <option value="DEBT_REPAY">Погашение долгов</option>
+                  <option value="USER_CREATE">Создание пользователей</option>
+                </select>
+
+                <select
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                  className="h-8 rounded-lg border border-input bg-card px-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">Все пользователи</option>
+                  {auditFilters.users.map(u => (
+                    <option key={u} value={u}>@{u}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* Action Filter */}
-              <select
-                value={selectedAction}
-                onChange={(e) => setSelectedAction(e.target.value)}
-                className="px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Все типы действий</option>
-                <option value="LOGIN_SUCCESS">Вход в систему</option>
-                <option value="LOGIN_FAILED">Ошибка входа</option>
-                <option value="SALE_CREATE">Оформление сделок</option>
-                <option value="ARRIVAL_CREATE">Оприходование склада</option>
-                <option value="TICKET_RETURN">Возврат тикетов</option>
-                <option value="FINANCE_INCOME">Приход в кассу</option>
-                <option value="FINANCE_EXPENSE">Расход из кассы</option>
-                <option value="DEBT_REPAY">Погашение долгов</option>
-                <option value="USER_CREATE">Создание пользователей</option>
-              </select>
-
-              {/* User Filter */}
-              <select
-                value={selectedUser}
-                onChange={(e) => setSelectedUser(e.target.value)}
-                className="px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Все пользователи</option>
-                {auditFilters.users.map(u => (
-                  <option key={u} value={u}>@{u}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={loadAudit}
-                disabled={auditLoading}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition"
-              >
-                <RefreshCw className={`w-4 h-4 ${auditLoading ? 'animate-spin' : ''}`} />
-                Обновить
-              </button>
-              <button
-                onClick={handleExportAuditCSV}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-sm transition"
-              >
-                <Download className="w-4 h-4" />
-                Экспорт в CSV
-              </button>
-            </div>
-          </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadAudit}
+                  disabled={auditLoading}
+                  className="h-8 px-2.5 text-xs"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 mr-1 ${auditLoading ? 'animate-spin' : ''}`} />
+                  Обновить
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportAuditCSV}
+                  className="h-8 px-2.5 text-xs text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1" />
+                  CSV
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Audit Table */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    <th className="py-3.5 px-4">Время</th>
-                    <th className="py-3.5 px-4">Пользователь</th>
-                    <th className="py-3.5 px-4">Тип действия</th>
-                    <th className="py-3.5 px-4">Объект</th>
-                    <th className="py-3.5 px-4">Детали операции</th>
-                    <th className="py-3.5 px-4">IP адрес</th>
-                    <th className="py-3.5 px-4 text-right">Инфо</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {auditLoading && auditLogs.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="py-12 text-center text-slate-400">
-                        <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-500" />
-                        Загрузка журнала аудита...
-                      </td>
+          <Card className="border-border">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-border text-muted-foreground font-medium bg-muted/30">
+                      <th className="py-2.5 px-4">Время</th>
+                      <th className="py-2.5 px-3">Пользователь</th>
+                      <th className="py-2.5 px-3">Тип действия</th>
+                      <th className="py-2.5 px-3">Объект</th>
+                      <th className="py-2.5 px-3">Детали операции</th>
+                      <th className="py-2.5 px-3">IP адрес</th>
+                      <th className="py-2.5 px-4 text-right">Инфо</th>
                     </tr>
-                  ) : auditLogs.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="py-12 text-center text-slate-400">
-                        Записи аудита по заданным фильтрам не найдены
-                      </td>
-                    </tr>
-                  ) : (
-                    auditLogs.map((log) => (
-                      <tr 
-                        key={log.id} 
-                        className="hover:bg-slate-50/70 transition cursor-pointer"
-                        onClick={() => setSelectedLogDetail(log)}
-                      >
-                        <td className="py-3.5 px-4 text-xs font-mono text-slate-500 whitespace-nowrap">
-                          {log.created_at || log.timestamp}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="font-semibold text-slate-900 text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            @{log.username || 'система'}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          {renderActionBadge(log.action)}
-                        </td>
-                        <td className="py-3.5 px-4 font-medium text-slate-800 text-xs">
-                          {log.entity || '—'}
-                        </td>
-                        <td className="py-3.5 px-4 text-xs text-slate-600 max-w-md truncate">
-                          {log.details || '—'}
-                        </td>
-                        <td className="py-3.5 px-4 font-mono text-xs text-slate-400 whitespace-nowrap">
-                          {log.ip || '127.0.0.1'}
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedLogDetail(log);
-                            }}
-                            className="p-1 rounded text-slate-400 hover:text-indigo-600 hover:bg-slate-100"
-                            title="Подробнее"
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {auditLoading && auditLogs.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="py-10 text-center text-muted-foreground">
+                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-primary" />
+                          Загрузка журнала аудита...
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                    ) : auditLogs.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="py-10 text-center text-muted-foreground">
+                          Записи аудита не найдены
+                        </td>
+                      </tr>
+                    ) : (
+                      auditLogs.map((log) => (
+                        <tr 
+                          key={log.id} 
+                          className="hover:bg-muted/50 transition-colors cursor-pointer"
+                          onClick={() => setSelectedLogDetail(log)}
+                        >
+                          <td className="py-3 px-4 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                            {log.created_at || log.timestamp}
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className="font-semibold text-foreground text-[11px] bg-muted px-2 py-0.5 rounded border border-border">
+                              @{log.username || 'система'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 whitespace-nowrap">
+                            {renderActionBadge(log.action)}
+                          </td>
+                          <td className="py-3 px-3 font-medium text-foreground">
+                            {log.entity || '—'}
+                          </td>
+                          <td className="py-3 px-3 text-muted-foreground max-w-md truncate">
+                            {log.details || '—'}
+                          </td>
+                          <td className="py-3 px-3 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                            {log.ip || '127.0.0.1'}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedLogDetail(log);
+                              }}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                              title="Подробнее"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
       {/* USER MODAL (CREATE / EDIT) */}
-      {userModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/60">
-              <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-600" />
-                {editingUser ? `Редактирование @${editingUser.username}` : 'Создание нового пользователя'}
-              </h3>
-              <button
-                onClick={() => setUserModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      <Modal
+        isOpen={userModalOpen}
+        onClose={() => setUserModalOpen(false)}
+        title={editingUser ? `Редактирование @${editingUser.username}` : 'Создание нового пользователя'}
+        description="Заполните учетные данные и права доступа сотрудника"
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleSaveUser} className="space-y-4">
+          {userFormError && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-xs flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{userFormError}</span>
             </div>
+          )}
 
-            <form onSubmit={handleSaveUser} className="p-6 space-y-4">
-              {userFormError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-xs flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
-                  <span>{userFormError}</span>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  ФИО сотрудника <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Например: Азиз Рахимов"
-                  value={userForm.full_name}
-                  onChange={(e) => setUserForm({ ...userForm, full_name: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              {!editingUser && (
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Логин в системе <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Например: a.rakhimov"
-                    value={userForm.username}
-                    onChange={(e) => setUserForm({ ...userForm, username: e.target.value.toLowerCase().trim() })}
-                    className="w-full px-3.5 py-2 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  {editingUser ? 'Новый пароль (оставьте пустым, если не меняется)' : 'Пароль *'}
-                </label>
-                <input
-                  type="password"
-                  placeholder={editingUser ? '••••••••' : 'Задайте надежный пароль'}
-                  value={userForm.password}
-                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Роль доступа</label>
-                  <select
-                    value={userForm.role}
-                    onChange={(e) => {
-                      const r = e.target.value;
-                      setUserForm({
-                        ...userForm,
-                        role: r,
-                        role_title: r === 'admin' ? 'Администратор' : r === 'operator' ? 'Оператор склада' : r === 'accountant' ? 'Бухгалтер' : 'Наблюдатель'
-                      });
-                    }}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="operator">Оператор склада</option>
-                    <option value="accountant">Бухгалтер</option>
-                    <option value="admin">Администратор</option>
-                    <option value="viewer">Наблюдатель</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Должность (титул)</label>
-                  <input
-                    type="text"
-                    placeholder="Например: Старший смены"
-                    value={userForm.role_title}
-                    onChange={(e) => setUserForm({ ...userForm, role_title: e.target.value })}
-                    className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Контактный телефон</label>
-                <input
-                  type="text"
-                  placeholder="+998 90 000-00-00"
-                  value={userForm.phone}
-                  onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setUserModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={userSubmitting}
-                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm transition disabled:opacity-50"
-                >
-                  {userSubmitting ? 'Сохранение...' : editingUser ? 'Сохранить изменения' : 'Создать учетную запись'}
-                </button>
-              </div>
-            </form>
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1.5">
+              ФИО сотрудника <span className="text-destructive">*</span>
+            </label>
+            <Input
+              required
+              placeholder="Например: Азиз Рахимов"
+              value={userForm.full_name}
+              onChange={(e) => setUserForm({ ...userForm, full_name: e.target.value })}
+            />
           </div>
-        </div>
-      )}
+
+          {!editingUser && (
+            <div>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                Логин в системе <span className="text-destructive">*</span>
+              </label>
+              <Input
+                required
+                placeholder="a.rakhimov"
+                value={userForm.username}
+                onChange={(e) => setUserForm({ ...userForm, username: e.target.value.toLowerCase().trim() })}
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1.5">
+              {editingUser ? 'Новый пароль (оставьте пустым, если не меняется)' : 'Пароль *'}
+            </label>
+            <Input
+              type="password"
+              placeholder={editingUser ? '••••••••' : 'Задайте надежный пароль'}
+              value={userForm.password}
+              onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">Роль доступа</label>
+              <select
+                value={userForm.role}
+                onChange={(e) => {
+                  const r = e.target.value;
+                  setUserForm({
+                    ...userForm,
+                    role: r,
+                    role_title: r === 'admin' ? 'Администратор' : r === 'operator' ? 'Оператор склада' : r === 'accountant' ? 'Бухгалтер' : 'Наблюдатель'
+                  });
+                }}
+                className="flex h-10 w-full rounded-xl border border-input bg-card px-3 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="operator">Оператор склада</option>
+                <option value="accountant">Бухгалтер</option>
+                <option value="admin">Администратор</option>
+                <option value="viewer">Наблюдатель</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">Должность</label>
+              <Input
+                placeholder="Старший смены"
+                value={userForm.role_title}
+                onChange={(e) => setUserForm({ ...userForm, role_title: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1.5">Контактный телефон</label>
+            <Input
+              placeholder="+998 90 000-00-00"
+              value={userForm.phone}
+              onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
+            />
+          </div>
+
+          <div className="pt-3 flex items-center justify-end gap-2 border-t border-border">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setUserModalOpen(false)}
+            >
+              Отмена
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={userSubmitting}
+            >
+              {userSubmitting ? 'Сохранение...' : editingUser ? 'Сохранить изменения' : 'Создать пользователя'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       {/* AUDIT LOG DETAIL MODAL */}
-      {selectedLogDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/60">
-              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                <Activity className="w-5 h-5 text-indigo-600" />
-                Детали записи аудита #{selectedLogDetail.id}
-              </h3>
-              <button
-                onClick={() => setSelectedLogDetail(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4 pb-3 border-b border-slate-100">
-                <div>
-                  <span className="text-xs text-slate-400">Дата и точное время:</span>
-                  <p className="font-mono text-xs font-semibold text-slate-800 mt-0.5">
-                    {selectedLogDetail.created_at || selectedLogDetail.timestamp}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400">Пользователь:</span>
-                  <p className="font-semibold text-indigo-600 mt-0.5">
-                    @{selectedLogDetail.username || 'система'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 pb-3 border-b border-slate-100">
-                <div>
-                  <span className="text-xs text-slate-400">Тип события:</span>
-                  <div className="mt-1">{renderActionBadge(selectedLogDetail.action)}</div>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400">IP адрес клиента:</span>
-                  <p className="font-mono text-xs text-slate-700 mt-1">
-                    {selectedLogDetail.ip || '127.0.0.1'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pb-3 border-b border-slate-100">
-                <span className="text-xs text-slate-400">Затронутый объект / Сущность:</span>
-                <p className="font-medium text-slate-900 mt-0.5">
-                  {selectedLogDetail.entity || '—'}
+      <Modal
+        isOpen={!!selectedLogDetail}
+        onClose={() => setSelectedLogDetail(null)}
+        title={`Детали записи аудита #${selectedLogDetail?.id}`}
+        description="Полная техническая информация о зарегистрированном действии"
+        maxWidth="max-w-lg"
+      >
+        {selectedLogDetail && (
+          <div className="space-y-4 text-xs">
+            <div className="grid grid-cols-2 gap-3 pb-3 border-b border-border">
+              <div>
+                <span className="text-muted-foreground block text-[11px]">Дата и точное время:</span>
+                <p className="font-mono font-semibold text-foreground mt-0.5">
+                  {selectedLogDetail.created_at || selectedLogDetail.timestamp}
                 </p>
               </div>
-
               <div>
-                <span className="text-xs text-slate-400">Полный текст операции:</span>
-                <div className="mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs text-slate-800 break-words leading-relaxed">
-                  {selectedLogDetail.details || 'Детали отсутствуют'}
-                </div>
-              </div>
-
-              <div className="pt-2 flex justify-end">
-                <button
-                  onClick={() => setSelectedLogDetail(null)}
-                  className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition"
-                >
-                  Закрыть
-                </button>
+                <span className="text-muted-foreground block text-[11px]">Пользователь:</span>
+                <p className="font-semibold text-primary mt-0.5">
+                  @{selectedLogDetail.username || 'система'}
+                </p>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-3 pb-3 border-b border-border">
+              <div>
+                <span className="text-muted-foreground block text-[11px]">Тип действия:</span>
+                <div className="mt-1">{renderActionBadge(selectedLogDetail.action)}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground block text-[11px]">IP адрес клиента:</span>
+                <p className="font-mono text-muted-foreground mt-1">
+                  {selectedLogDetail.ip || '127.0.0.1'}
+                </p>
+              </div>
+            </div>
+
+            <div className="pb-3 border-b border-border">
+              <span className="text-muted-foreground block text-[11px]">Затронутый объект / Сущность:</span>
+              <p className="font-medium text-foreground mt-0.5">
+                {selectedLogDetail.entity || '—'}
+              </p>
+            </div>
+
+            <div>
+              <span className="text-muted-foreground block text-[11px]">Полный текст операции:</span>
+              <div className="mt-1 p-3 bg-muted border border-border rounded-xl font-mono text-[11px] text-foreground break-words leading-relaxed">
+                {selectedLogDetail.details || 'Детали отсутствуют'}
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedLogDetail(null)}
+              >
+                Закрыть
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }
