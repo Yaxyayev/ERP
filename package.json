@@ -1,0 +1,15 @@
+{
+  "name": "erp-cement",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "start:backend": "node backend/src/server.js",
+    "start:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "node backend/src/db/seed.js",
+    "test:backend": "node backend/src/test_api.js"
+  }
+}

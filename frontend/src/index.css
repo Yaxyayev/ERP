@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 215 20% 95%; /* #f0f3f7 soft calm cool slate, gentle on the eyes */
+    --foreground: 216 20% 28%; /* #394454 soft slate text, NOT pitch black #000000 */
+
+    --card: 216 20% 99%; /* #fafbfd soft off-white card */
+    --card-foreground: 216 20% 28%;
+
+    --popover: 216 20% 99%;
+    --popover-foreground: 216 20% 28%;
+
+    --primary: 215 22% 38%; /* #4c5d73 matte slate */
+    --primary-foreground: 210 30% 98%;
+
+    --secondary: 214 20% 90%; /* #dfe5ec */
+    --secondary-foreground: 216 20% 28%;
+
+    --muted: 214 20% 91%;
+    --muted-foreground: 215 14% 50%; /* #6f7c8d */
+
+    --accent: 214 20% 91%;
+    --accent-foreground: 216 20% 28%;
+
+    --destructive: 354 55% 52%; /* #be4954 soft muted rose-red, not screaming neon */
+    --destructive-foreground: 210 30% 98%;
+
+    --border: 214 18% 86%; /* #d6dce4 soft subtle border */
+    --input: 214 18% 86%;
+    --ring: 215 20% 45%;
+
+    --radius: 0.875rem;
+  }
+
+  .dark {
+    --background: 220 15% 15%; /* #21252d soft dark slate, NOT pitch black #000000! */
+    --foreground: 218 20% 82%; /* #c8d2de gentle readable slate, NOT blinding white! */
+
+    --card: 220 16% 19%; /* #292f3a soft surface, low-contrast elevation */
+    --card-foreground: 218 20% 82%;
+
+    --popover: 220 16% 19%;
+    --popover-foreground: 218 20% 82%;
+
+    --primary: 215 22% 44%; /* #576b85 serene matte slate-blue */
+    --primary-foreground: 210 30% 98%;
+
+    --secondary: 220 15% 23%; /* #323845 */
+    --secondary-foreground: 218 20% 82%;
+
+    --muted: 220 15% 23%;
+    --muted-foreground: 218 15% 64%; /* #93a0b3 gentle gray-slate */
+
+    --accent: 220 15% 24%;
+    --accent-foreground: 218 20% 86%;
+
+    --destructive: 354 50% 64%; /* #d86d76 soft pastel rose, pleasant and calm */
+    --destructive-foreground: 210 30% 98%;
+
+    --border: 220 14% 26%; /* #394150 soft subtle border */
+    --input: 220 14% 26%;
+    --ring: 215 22% 50%;
+
+    --radius: 0.875rem;
+  }
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Стилизация скроллбара */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.6);
+}
+
+/* ЧИСТЫЙ СТИЛЬ ПЕЧАТИ (Официальные документы и отчеты) */
+@media print {
+  /* Скрыть навигацию, шапку, кнопки действий и скроллбары */
+  header,
+  aside,
+  #mobile-menu-btn,
+  #backup-btn,
+  #theme-toggle-btn,
+  .no-print,
+  button:not(.print-keep),
+  .recharts-responsive-container,
+  .recharts-wrapper,
+  .recharts-surface,
+  svg.recharts-surface,
+  .process-graph,
+  .chart-card,
+  [data-chart-container],
+  .graph-container {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .card,
+  div[class*="border-border"] {
+    border: 1px solid #d4d4d8 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  /* Показать официальный печатный заголовок */
+  .print-only {
+    display: block !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border: 1px solid #e4e4e7 !important;
+    padding: 6px 8px !important;
+    color: #09090b !important;
+  }
+
+  th {
+    background-color: #f4f4f5 !important;
+  }
+
+  /* Разрыв страницы */
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+.print-only {
+  display: none;
+}

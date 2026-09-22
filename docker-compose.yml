@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  erp-cement:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erp_cement_app
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+    volumes:
+      # Постоянное хранение базы данных SQLite на хосте
+      - ./backend/data:/app/backend/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
