@@ -42,7 +42,7 @@ import { api } from '../api/client';
 import { formatCurrency, formatNumber, formatDate } from '../lib/utils';
 import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 
-const CLIENT_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+const CLIENT_COLORS = ['#5645d4', '#1aae39', '#dd5b00', '#0075de', '#7b3ff2', '#2a9d99'];
 
 export function DashboardPage({ onNavigate }) {
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
@@ -176,7 +176,7 @@ export function DashboardPage({ onNavigate }) {
       label: 'Статус',
       align: 'center',
       render: (v) => (
-        <Badge variant={v === 'paid' ? 'success' : v === 'debt' ? 'destructive' : 'warning'} className="text-[10px]">
+        <Badge variant={v === 'paid' ? 'mint' : v === 'debt' ? 'rose' : 'peach'} className="text-[10px]">
           {v === 'paid' ? 'Оплачено' : v === 'debt' ? 'В долг' : 'Частично'}
         </Badge>
       )
@@ -594,24 +594,28 @@ export function DashboardPage({ onNavigate }) {
       {/* Компактная шапка с режимом (Графики / Схема процессов) + Календарь фильтрации */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 no-print">
         <div className="flex items-center gap-2">
-          {/* Режим отображения */}
-          <div className="inline-flex rounded-lg border border-border bg-muted p-0.5 text-xs font-medium">
+          {/* Режим отображения (Notion pill-tabs) */}
+          <div className="inline-flex items-center gap-1.5">
             <button
               onClick={() => setMainView('charts')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-all ${
-                mainView === 'charts' ? 'bg-background text-foreground shadow-xs font-semibold' : 'text-muted-foreground hover:text-foreground'
+              className={`h-7 px-3 rounded-full text-xs font-medium border transition-all inline-flex items-center gap-1.5 ${
+                mainView === 'charts'
+                  ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                  : 'bg-transparent text-steel border-hairline hover:text-foreground'
               }`}
             >
-              <BarChart3 className="h-3.5 w-3.5 text-primary" />
+              <BarChart3 className="h-3.5 w-3.5" />
               <span>Графики и Сводка</span>
             </button>
             <button
               onClick={() => setMainView('process_graph')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-all ${
-                mainView === 'process_graph' ? 'bg-background text-foreground shadow-xs font-semibold' : 'text-muted-foreground hover:text-foreground'
+              className={`h-7 px-3 rounded-full text-xs font-medium border transition-all inline-flex items-center gap-1.5 ${
+                mainView === 'process_graph'
+                  ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                  : 'bg-transparent text-steel border-hairline hover:text-foreground'
               }`}
             >
-              <GitBranch className="h-3.5 w-3.5 text-primary" />
+              <GitBranch className="h-3.5 w-3.5" />
               <span>Схема процессов (Граф)</span>
             </button>
           </div>
@@ -625,12 +629,12 @@ export function DashboardPage({ onNavigate }) {
             onDateChange={setDateRange}
           />
 
-          <Button variant="outline" size="sm" onClick={triggerPrint} className="h-8 px-2.5 text-xs">
+          <Button variant="outline" size="sm" onClick={triggerPrint} className="h-7 px-2.5 text-xs font-medium">
             <Printer className="h-3.5 w-3.5 mr-1" />
             Печать
           </Button>
 
-          <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-8 px-2.5 text-xs">
+          <Button variant="outline" size="sm" onClick={handleExportCsv} className="h-7 px-2.5 text-xs font-medium">
             <Download className="h-3.5 w-3.5 mr-1" />
             Экспорт
           </Button>
@@ -936,19 +940,23 @@ export function DashboardPage({ onNavigate }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="inline-flex rounded-md border border-border bg-muted p-0.5 text-xs no-print">
+                  <div className="inline-flex items-center gap-1 no-print">
                     <button
                       onClick={() => setChartView('cement')}
-                      className={`rounded px-2 py-0.5 font-medium transition-all ${
-                        chartView === 'cement' ? 'bg-background text-foreground shadow-xs font-semibold' : 'text-muted-foreground'
+                      className={`h-6 px-2.5 rounded-full text-xs font-medium border transition-all ${
+                        chartView === 'cement'
+                          ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                          : 'bg-transparent text-steel border-hairline hover:text-foreground'
                       }`}
                     >
                       Заводы
                     </button>
                     <button
                       onClick={() => setChartView('logistics')}
-                      className={`rounded px-2 py-0.5 font-medium transition-all ${
-                        chartView === 'logistics' ? 'bg-background text-foreground shadow-xs font-semibold' : 'text-muted-foreground'
+                      className={`h-6 px-2.5 rounded-full text-xs font-medium border transition-all ${
+                        chartView === 'logistics'
+                          ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                          : 'bg-transparent text-steel border-hairline hover:text-foreground'
                       }`}
                     >
                       Машины
@@ -956,7 +964,7 @@ export function DashboardPage({ onNavigate }) {
                   </div>
                   <button
                     onClick={handleMaximizeFactoriesLogistics}
-                    className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors no-print"
+                    className="p-1 rounded-md text-steel hover:text-foreground hover:bg-surface transition-colors no-print"
                     title="Развернуть график заводов и автопарка"
                   >
                     <Maximize2 className="h-3.5 w-3.5" />

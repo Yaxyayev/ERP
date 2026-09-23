@@ -10,7 +10,8 @@ import {
   PanelLeft,
   ChevronRight,
   Shield,
-  BookOpen
+  BookOpen,
+  Factory
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
@@ -30,11 +31,11 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
       ]
     },
     {
-      title: 'Склад и Логистика',
+      title: 'Склад и Производство',
       items: [
         {
           id: 'warehouse',
-          label: 'Склад и Квоты',
+          label: 'Склад и Силосы',
           icon: Package
         },
         {
@@ -60,7 +61,7 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
       ]
     },
     {
-      title: 'Система и Справка',
+      title: 'Система',
       items: [
         ...(user?.role === 'admin' ? [{
           id: 'users_audit',
@@ -74,7 +75,7 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
         },
         {
           id: 'knowledge',
-          label: 'База знаний (Справка)',
+          label: 'База знаний (Wiki)',
           icon: BookOpen
         }
       ]
@@ -88,45 +89,55 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
   return (
     <aside
       className={cn(
-        'border-r border-border/80 bg-card/90 backdrop-blur-md flex flex-col justify-between transition-all duration-200 ease-in-out shrink-0 select-none z-30 overflow-hidden h-full overflow-y-auto',
-        isCollapsed ? 'w-16 p-2' : 'w-60 p-3',
+        'border-r border-hairline bg-surface flex flex-col justify-between transition-all duration-200 ease-in-out shrink-0 select-none z-30 overflow-hidden h-full overflow-y-auto',
+        isCollapsed ? 'w-14 p-2' : 'w-56 p-2.5',
         className
       )}
     >
-      <div className="space-y-4 w-full">
-        {/* Шапка бокового меню с кнопками сворачивания и скрытия */}
-        <div className={cn('flex items-center justify-between px-1', isCollapsed && 'justify-center px-0')}>
-          {!isCollapsed && (
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-              Навигация
-            </span>
+      <div className="space-y-3 w-full">
+        {/* Notion Workspace Header in Sidebar */}
+        <div className={cn('flex items-center justify-between px-1.5 py-1', isCollapsed && 'justify-center px-0')}>
+          {!isCollapsed ? (
+            <div className="flex items-center gap-2 truncate">
+              <div className="w-5 h-5 rounded-[4px] bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-[10px] shrink-0">
+                N
+              </div>
+              <span className="font-semibold text-xs tracking-tight text-foreground truncate">
+                ERP Цемент
+              </span>
+            </div>
+          ) : (
+            <div className="w-6 h-6 rounded-[4px] bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-xs shrink-0">
+              N
+            </div>
           )}
-          <div className="flex items-center gap-1">
+
+          <div className="flex items-center gap-0.5">
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              title={isCollapsed ? 'Развернуть меню' : 'Компактный режим (иконки)'}
+              className="p-1 rounded-md text-muted-foreground hover:bg-[#eae8e5] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
+              title={isCollapsed ? 'Развернуть меню' : 'Свернуть меню'}
             >
-              {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              {isCollapsed ? <PanelLeft className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
             </button>
             {!isCollapsed && onHideSidebar && (
               <button
                 onClick={onHideSidebar}
-                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="p-1 rounded-md text-muted-foreground hover:bg-[#eae8e5] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
                 title="Спрятать меню (⌘B)"
               >
-                <ChevronRight className="h-4 w-4 rotate-180" />
+                <ChevronRight className="h-3.5 w-3.5 rotate-180" />
               </button>
             )}
           </div>
         </div>
 
-        {/* Навигация с группировкой */}
+        {/* Notion Sidebar Navigation Groups */}
         <nav className="space-y-3">
           {menuGroups.map((group) => (
-            <div key={group.title} className="space-y-1">
+            <div key={group.title} className="space-y-0.5">
               {!isCollapsed && (
-                <div className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                <div className="px-2 py-1 text-[11px] font-semibold text-steel/80 tracking-wide">
                   {group.title}
                 </div>
               )}
@@ -140,14 +151,14 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
                     id={`nav-${item.id}`}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
-                      'w-full flex items-center rounded-xl transition-all duration-150',
-                      isCollapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2 text-xs',
+                      'w-full flex items-center rounded-md transition-colors duration-100 cursor-pointer',
+                      isCollapsed ? 'justify-center p-2' : 'gap-2 px-2 py-1.5 text-xs',
                       isActive
-                        ? 'bg-primary/25 text-foreground font-semibold border border-primary/30 shadow-xs'
-                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                        ? 'bg-[#eae8e5] dark:bg-[#2d2d2d] text-foreground font-semibold'
+                        : 'text-foreground/80 hover:bg-[#eae8e5]/60 dark:hover:bg-[#2d2d2d]/60 hover:text-foreground font-normal'
                     )}
                   >
-                    <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')} />
+                    <Icon className={cn('h-3.5 w-3.5 shrink-0', isActive ? 'text-[#5645d4]' : 'text-muted-foreground')} />
                     {!isCollapsed && (
                       <span className="truncate">{item.label}</span>
                     )}
@@ -159,6 +170,13 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
         </nav>
       </div>
 
+      {/* Notion Sidebar Footer: Workspace version */}
+      {!isCollapsed && (
+        <div className="px-2 py-1.5 text-[11px] text-muted-foreground border-t border-hairline/60 flex items-center justify-between">
+          <span>Notion Workspace</span>
+          <span className="font-mono text-[10px] opacity-75">v4.0</span>
+        </div>
+      )}
     </aside>
   );
 }

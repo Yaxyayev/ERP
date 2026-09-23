@@ -37,30 +37,30 @@ export function ChartDrilldownModal({
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-4xl rounded-2xl bg-card border border-border text-card-foreground shadow-2xl transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col z-10">
+      <div className="relative w-full max-w-4xl rounded-lg bg-canvas border border-hairline text-foreground shadow-notion-modal transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col z-10">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted/20">
+        <div className="flex items-center justify-between border-b border-hairline px-6 py-4 bg-surface">
           <div>
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
-              <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">{title}</h2>
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">{title}</h2>
             </div>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+              <p className="text-xs text-steel mt-0.5">{subtitle}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
             {records.length > 0 && (
-              <Button variant="outline" size="sm" onClick={handleExport} className="h-8 px-2.5 text-xs">
+              <Button variant="outline" size="sm" onClick={handleExport} className="h-7 px-2.5 text-xs font-medium">
                 <Download className="h-3.5 w-3.5 mr-1" />
                 Экспорт CSV
               </Button>
             )}
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              className="rounded-md p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -71,12 +71,12 @@ export function ChartDrilldownModal({
           {stats.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {stats.map((stat, idx) => (
-                <div key={idx} className="p-3 rounded-xl border border-border/70 bg-muted/30">
-                  <div className="text-[11px] font-medium text-muted-foreground">{stat.label}</div>
-                  <div className={`text-base font-bold mt-0.5 ${stat.color || 'text-foreground'}`}>
+                <div key={idx} className="p-3 rounded-md border border-hairline bg-surface">
+                  <div className="text-[11px] font-medium text-steel">{stat.label}</div>
+                  <div className={`text-base font-semibold mt-0.5 ${stat.color || 'text-foreground'}`}>
                     {stat.value}
                   </div>
-                  {stat.desc && <div className="text-[10px] text-muted-foreground mt-0.5">{stat.desc}</div>}
+                  {stat.desc && <div className="text-[10px] text-steel mt-0.5">{stat.desc}</div>}
                 </div>
               ))}
             </div>
@@ -89,23 +89,23 @@ export function ChartDrilldownModal({
             </div>
 
             {records.length > 0 ? (
-              <div className="rounded-xl border border-border overflow-hidden">
+              <div className="rounded-md border border-hairline overflow-hidden">
                 <div className="overflow-x-auto max-h-[380px]">
                   <table className="w-full text-left text-xs">
-                    <thead className="sticky top-0 bg-muted/70 backdrop-blur border-b border-border text-muted-foreground font-semibold">
+                    <thead className="sticky top-0 bg-surface border-b border-hairline text-steel font-medium">
                       <tr>
                         {columns.map((col) => (
-                          <th key={col.key} className={`py-2.5 px-3 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}>
+                          <th key={col.key} className={`py-2 px-3 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}>
                             {col.label}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border">
+                    <tbody className="divide-y divide-hairline-soft">
                       {records.map((row, idx) => (
-                        <tr key={idx} className="hover:bg-muted/40 transition-colors">
+                        <tr key={idx} className="hover:bg-surface/60 transition-colors">
                           {columns.map((col) => (
-                            <td key={col.key} className={`py-2.5 px-3 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}>
+                            <td key={col.key} className={`py-2 px-3 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'}`}>
                               {col.render ? col.render(row[col.key], row) : (row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '—')}
                             </td>
                           ))}
@@ -116,8 +116,8 @@ export function ChartDrilldownModal({
                 </div>
               </div>
             ) : (
-              <div className="py-12 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
-                <Info className="h-6 w-6 text-muted-foreground mx-auto mb-1.5 opacity-50" />
+              <div className="py-12 text-center text-xs text-steel border border-dashed border-hairline rounded-md">
+                <Info className="h-5 w-5 text-steel mx-auto mb-1.5 opacity-60" />
                 Нет доступных детальных записей за указанный период
               </div>
             )}
@@ -125,8 +125,8 @@ export function ChartDrilldownModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border px-6 py-3 bg-muted/20 flex justify-end">
-          <Button onClick={onClose} size="sm" className="h-8 px-4 text-xs font-medium">
+        <div className="border-t border-hairline px-6 py-3 bg-surface flex justify-end">
+          <Button onClick={onClose} size="sm" className="h-7 px-4 text-xs font-medium">
             Закрыть
           </Button>
         </div>

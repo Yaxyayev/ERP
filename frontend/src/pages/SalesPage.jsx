@@ -626,7 +626,7 @@ export function SalesPage() {
         </Card>
       </div>
 
-      {/* Панель фильтрации: Календарь + Поиск + Статусы */}
+      {/* Панель фильтрации: Календарь + Поиск + Статусы (Notion style) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
         <DateRangePicker
           startDate={dateFilter.startDate}
@@ -637,18 +637,18 @@ export function SalesPage() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Поиск по клиенту / номеру */}
           <div className="relative w-full sm:w-48">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-steel" />
             <input
               type="text"
               placeholder="Поиск по сделке..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 pl-8 pr-3 text-xs rounded-xl bg-card border border-border w-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-7 pl-8 pr-3 text-xs rounded-md bg-canvas border border-hairline w-full text-foreground placeholder:text-steel focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
-          {/* Статус оплаты */}
-          <div className="inline-flex rounded-lg border border-border bg-muted p-0.5 text-xs font-medium">
+          {/* Статус оплаты (Notion pill-tabs) */}
+          <div className="inline-flex items-center gap-1">
             {[
               { id: 'all', label: 'Все' },
               { id: 'paid', label: 'Оплачено' },
@@ -658,8 +658,10 @@ export function SalesPage() {
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id)}
-                className={`rounded-md px-2 py-1 transition-all ${
-                  statusFilter === st.id ? 'bg-background text-foreground shadow-xs font-semibold' : 'text-muted-foreground hover:text-foreground'
+                className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all ${
+                  statusFilter === st.id
+                    ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                    : 'bg-transparent text-steel border-hairline hover:text-foreground'
                 }`}
               >
                 {st.label}
@@ -669,22 +671,22 @@ export function SalesPage() {
         </div>
       </div>
 
-      {/* Таблица продаж */}
-      <Card className="border-border">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm font-semibold">Реестр сделок</CardTitle>
-          <Badge variant="outline">
+      {/* Таблица продаж (Notion Database Table) */}
+      <Card className="border-hairline rounded-lg">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
+          <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Реестр сделок</CardTitle>
+          <Badge variant="outline" className="text-xs">
             {filteredSales.length !== sales.length
               ? `Найдено ${filteredSales.length} из ${sales.length}`
               : `${sales.length} сделок`}
           </Badge>
         </CardHeader>
 
-        <CardContent className="p-0 sm:p-4 pt-0">
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border text-muted-foreground font-medium">
+                <tr className="border-b border-hairline bg-surface text-steel font-medium">
                   <th className="py-2.5 px-3">Сделка</th>
                   <th className="py-2.5 px-3">Клиент</th>
                   <th className="py-2.5 px-2">Товар / Завод</th>
@@ -696,51 +698,51 @@ export function SalesPage() {
                   <th className="py-2.5 px-2 text-center">Статус</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border text-xs">
+              <tbody className="divide-y divide-hairline-soft text-xs">
                 {filteredSales.map((s) => (
-                  <tr key={s.id} className="hover:bg-muted/50 transition-colors">
-                    <td className="py-3 px-4 font-mono font-medium text-foreground">
+                  <tr key={s.id} className="hover:bg-surface/60 transition-colors">
+                    <td className="py-2.5 px-3 font-mono font-medium text-foreground">
                       {s.sale_number}
-                      <span className="block text-[11px] text-muted-foreground font-sans">{formatDate(s.date)}</span>
+                      <span className="block text-[11px] text-steel font-sans">{formatDate(s.date)}</span>
                     </td>
-                    <td className="py-3 px-3">
-                      <span className="font-semibold text-foreground">{s.client_name}</span>
-                      {s.client_phone && <span className="block text-[11px] text-muted-foreground">{s.client_phone}</span>}
+                    <td className="py-2.5 px-3">
+                      <span className="font-semibold text-charcoal dark:text-foreground">{s.client_name}</span>
+                      {s.client_phone && <span className="block text-[11px] text-steel">{s.client_phone}</span>}
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-2.5 px-3">
                       {s.sale_type === 'cement' ? (
                         <>
-                          <span className="font-medium text-foreground">{s.product_name}</span>
-                          <span className="block text-[11px] text-muted-foreground">{s.factory_name || 'Склад'}</span>
+                          <span className="font-medium text-charcoal dark:text-foreground">{s.product_name}</span>
+                          <span className="block text-[11px] text-steel">{s.factory_name || 'Склад'}</span>
                         </>
                       ) : (
-                        <Badge variant="outline">Услуга перевозки</Badge>
+                        <Badge variant="lavender">Услуга перевозки</Badge>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-right font-medium">{formatNumber(s.tonnage)} т</td>
-                    <td className="py-3 px-3 text-right text-muted-foreground">{formatCurrency(s.cement_amount)}</td>
-                    <td className="py-3 px-3 text-right text-muted-foreground">{formatCurrency(s.logistics_amount)}</td>
-                    <td className="py-3 px-4 text-right font-bold text-foreground">{formatCurrency(s.total_amount)}</td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-2.5 px-3 text-right font-medium">{formatNumber(s.tonnage)} т</td>
+                    <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(s.cement_amount)}</td>
+                    <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(s.logistics_amount)}</td>
+                    <td className="py-2.5 px-3 text-right font-semibold text-charcoal dark:text-foreground">{formatCurrency(s.total_amount)}</td>
+                    <td className="py-2.5 px-3 text-center">
                       {s.paid_amount >= s.total_amount ? (
-                        <span className="text-emerald-600 font-semibold">{formatCurrency(s.paid_amount)}</span>
+                        <span className="text-brand-green font-semibold">{formatCurrency(s.paid_amount)}</span>
                       ) : (
                         <div>
-                          <span className="text-muted-foreground block">Опл: {formatNumber(s.paid_amount)}</span>
-                          <span className="text-destructive font-bold block">Долг: {formatNumber(s.debt_amount)}</span>
+                          <span className="text-steel block">Опл: {formatNumber(s.paid_amount)}</span>
+                          <span className="text-destructive font-semibold block">Долг: {formatNumber(s.debt_amount)}</span>
                         </div>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-center">
-                      {s.payment_status === 'paid' && <Badge variant="outline">Оплачено</Badge>}
-                      {s.payment_status === 'debt' && <Badge variant="destructive">В долг</Badge>}
-                      {s.payment_status === 'partial' && <Badge variant="secondary">Частично</Badge>}
+                    <td className="py-2.5 px-3 text-center">
+                      {s.payment_status === 'paid' && <Badge variant="mint">Оплачено</Badge>}
+                      {s.payment_status === 'debt' && <Badge variant="rose">В долг</Badge>}
+                      {s.payment_status === 'partial' && <Badge variant="peach">Частично</Badge>}
                     </td>
                   </tr>
                 ))}
                 {sales.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="py-8 text-center text-xs text-muted-foreground">
+                    <td colSpan={9} className="py-8 text-center text-xs text-steel">
                       Сделок пока нет
                     </td>
                   </tr>

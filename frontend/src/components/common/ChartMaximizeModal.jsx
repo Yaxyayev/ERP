@@ -82,26 +82,26 @@ export function ChartMaximizeModal({
         onClick={onClose}
       />
 
-      {/* Modal Dialog Card */}
-      <div className="relative w-full max-w-6xl rounded-2xl bg-card border border-border text-card-foreground shadow-2xl transition-all animate-in zoom-in-95 duration-200 my-auto max-h-[92vh] flex flex-col z-10 overflow-hidden">
+      {/* Modal Dialog Card (Notion Style) */}
+      <div className="relative w-full max-w-6xl rounded-lg bg-canvas border border-hairline text-foreground shadow-notion-modal transition-all animate-in zoom-in-95 duration-200 my-auto max-h-[92vh] flex flex-col z-10 overflow-hidden">
         
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border px-5 py-4 bg-muted/20 gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-hairline px-5 py-3.5 bg-surface gap-3">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/15 text-primary border border-primary/25 flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
-              <BarChart3 className="h-5 w-5" />
+            <div className="h-8 w-8 rounded-md bg-tint-lavender text-primary flex items-center justify-center shrink-0 mt-0.5">
+              <BarChart3 className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+                <h2 className="text-base font-semibold tracking-tight text-foreground">
                   {title}
                 </h2>
-                <Badge variant="outline" className="text-[10px] py-0.5 px-2 bg-primary/10 border-primary/30 text-primary">
+                <Badge variant="lavender" className="text-[10px] py-0.5 px-2">
                   Полная статистика
                 </Badge>
               </div>
               {subtitle && (
-                <p className="text-xs text-muted-foreground mt-0.5 max-w-xl">
+                <p className="text-xs text-steel mt-0.5 max-w-xl">
                   {subtitle}
                 </p>
               )}
@@ -110,34 +110,34 @@ export function ChartMaximizeModal({
 
           {/* Action Buttons & Tabs */}
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            {/* View switcher */}
-            <div className="inline-flex rounded-xl border border-border bg-muted/50 p-1 text-xs">
+            {/* View switcher (Notion pill-tabs) */}
+            <div className="inline-flex items-center gap-1">
               <button
                 onClick={() => setActiveTab('combined')}
-                className={`px-2.5 py-1 rounded-lg transition-all font-medium ${
+                className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all ${
                   activeTab === 'combined'
-                    ? 'bg-card text-foreground shadow-xs font-semibold'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                    : 'bg-transparent text-steel border-hairline hover:text-foreground'
                 }`}
               >
                 График + Таблица
               </button>
               <button
                 onClick={() => setActiveTab('chart')}
-                className={`px-2.5 py-1 rounded-lg transition-all font-medium ${
+                className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all ${
                   activeTab === 'chart'
-                    ? 'bg-card text-foreground shadow-xs font-semibold'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                    : 'bg-transparent text-steel border-hairline hover:text-foreground'
                 }`}
               >
                 Только график
               </button>
               <button
                 onClick={() => setActiveTab('table')}
-                className={`px-2.5 py-1 rounded-lg transition-all font-medium ${
+                className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all ${
                   activeTab === 'table'
-                    ? 'bg-card text-foreground shadow-xs font-semibold'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+                    : 'bg-transparent text-steel border-hairline hover:text-foreground'
                 }`}
               >
                 Ведомость
@@ -149,7 +149,7 @@ export function ChartMaximizeModal({
                 variant="outline"
                 size="sm"
                 onClick={handleExport}
-                className="h-8 px-2.5 text-xs rounded-xl hidden sm:inline-flex"
+                className="h-7 px-2.5 text-xs hidden sm:inline-flex"
                 title="Экспортировать в CSV"
               >
                 <Download className="h-3.5 w-3.5 mr-1" />
@@ -159,7 +159,7 @@ export function ChartMaximizeModal({
 
             <button
               onClick={onClose}
-              className="rounded-xl p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border/60"
+              className="rounded-md p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors border border-hairline"
               title="Закрыть (Esc)"
             >
               <X className="h-4 w-4" />
@@ -176,19 +176,19 @@ export function ChartMaximizeModal({
               {stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="p-3.5 rounded-xl border border-border/80 bg-muted/20 hover:bg-muted/35 transition-colors shadow-2xs group"
+                  className="p-3.5 rounded-md border border-hairline bg-surface transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-medium text-muted-foreground">{stat.label}</span>
+                    <span className="text-[11px] font-medium text-steel">{stat.label}</span>
                     {stat.icon && (
-                      <stat.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors opacity-70" />
+                      <stat.icon className="h-3.5 w-3.5 text-steel" />
                     )}
                   </div>
-                  <div className={`text-lg font-bold mt-1 tracking-tight ${stat.color || 'text-foreground'}`}>
+                  <div className={`text-lg font-semibold mt-1 tracking-tight ${stat.color || 'text-foreground'}`}>
                     {stat.value}
                   </div>
                   {stat.desc && (
-                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                    <div className="text-[10px] text-steel mt-0.5">
                       {stat.desc}
                     </div>
                   )}
@@ -199,13 +199,13 @@ export function ChartMaximizeModal({
 
           {/* 2. Развернутый График во всю ширину */}
           {(activeTab === 'combined' || activeTab === 'chart') && (
-            <div className="p-4 rounded-2xl border border-border/80 bg-muted/10">
+            <div className="p-4 rounded-lg border border-hairline bg-canvas">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-steel flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-primary" />
-                  Высокоточная визуализация
+                  Визуализация данных
                 </span>
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-[11px] text-steel">
                   Масштабируемый интерактивный режим
                 </span>
               </div>
@@ -228,18 +228,18 @@ export function ChartMaximizeModal({
 
                 {/* Table Search */}
                 <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                  <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-steel" />
                   <input
                     type="text"
                     placeholder="Быстрый поиск в строках..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-8 w-full rounded-xl bg-muted/40 border-0 ring-1 ring-border/80 px-2.5 py-1 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 pl-8 transition-all"
+                    className="h-7 w-full rounded-md bg-canvas border border-hairline px-2.5 py-1 text-xs text-foreground placeholder:text-steel focus:outline-none focus:border-primary pl-8 transition-all"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                      className="absolute right-2 top-1.5 text-steel hover:text-foreground"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -248,15 +248,15 @@ export function ChartMaximizeModal({
               </div>
 
               {filteredData.length > 0 ? (
-                <div className="rounded-xl border border-border overflow-hidden bg-card shadow-2xs">
+                <div className="rounded-md border border-hairline overflow-hidden bg-canvas">
                   <div className="overflow-x-auto max-h-[340px]">
                     <table className="w-full text-left text-xs">
-                      <thead className="sticky top-0 bg-muted/80 backdrop-blur-sm border-b border-border text-muted-foreground font-semibold z-10">
+                      <thead className="sticky top-0 bg-surface border-b border-hairline text-steel font-medium z-10">
                         <tr>
                           {columns.map((col) => (
                             <th
                               key={col.key}
-                              className={`py-2.5 px-3.5 ${
+                              className={`py-2 px-3 ${
                                 col.align === 'right'
                                   ? 'text-right'
                                   : col.align === 'center'
@@ -269,16 +269,16 @@ export function ChartMaximizeModal({
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-border">
+                      <tbody className="divide-y divide-hairline-soft">
                         {filteredData.map((row, idx) => (
                           <tr
                             key={idx}
-                            className="hover:bg-muted/40 transition-colors group"
+                            className="hover:bg-surface/60 transition-colors"
                           >
                             {columns.map((col) => (
                               <td
                                 key={col.key}
-                                className={`py-2.5 px-3.5 ${
+                                className={`py-2 px-3 ${
                                   col.align === 'right'
                                     ? 'text-right'
                                     : col.align === 'center'
@@ -300,7 +300,7 @@ export function ChartMaximizeModal({
                   </div>
                 </div>
               ) : (
-                <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
+                <div className="py-10 text-center text-xs text-steel border border-dashed border-hairline rounded-md">
                   {searchQuery ? 'По вашему запросу ничего не найдено' : 'Данные для отображения отсутствуют'}
                 </div>
               )}
@@ -309,10 +309,10 @@ export function ChartMaximizeModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border px-5 py-3 bg-muted/20 flex items-center justify-between">
-          <div className="text-[11px] text-muted-foreground flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>Данные синхронизированы в реальном времени</span>
+        <div className="border-t border-hairline px-5 py-3 bg-surface flex items-center justify-between">
+          <div className="text-[11px] text-steel flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-green" />
+            <span>Синхронизировано в реальном времени</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -321,7 +321,7 @@ export function ChartMaximizeModal({
                 variant="outline"
                 size="sm"
                 onClick={handleExport}
-                className="h-8 px-3 text-xs rounded-xl sm:hidden"
+                className="h-7 px-3 text-xs sm:hidden"
               >
                 <Download className="h-3.5 w-3.5 mr-1" />
                 CSV
@@ -330,7 +330,7 @@ export function ChartMaximizeModal({
             <Button
               onClick={onClose}
               size="sm"
-              className="h-8 px-4 text-xs font-medium rounded-xl"
+              className="h-7 px-4 text-xs font-medium"
             >
               Закрыть
             </Button>

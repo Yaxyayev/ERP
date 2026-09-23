@@ -21,37 +21,37 @@ export function Modal({ isOpen, onClose, title, description, children, maxWidth 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop blur */}
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity animate-in fade-in"
+        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity animate-in fade-in"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
+      {/* Notion Dialog Container */}
       <div
         className={cn(
-          'relative w-full rounded-2xl bg-card border border-border text-card-foreground shadow-2xl transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col',
+          'relative w-full rounded-lg bg-card border border-hairline text-card-foreground shadow-notion-modal transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col',
           maxWidth
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex items-center justify-between border-b border-hairline px-5 py-3.5">
           <div>
-            {title && <h2 className="text-lg font-bold tracking-tight">{title}</h2>}
+            {title && <h2 className="text-sm sm:text-base font-semibold tracking-tight text-foreground">{title}</h2>}
             {description && (
               <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            className="rounded-md p-1 text-muted-foreground hover:bg-surface hover:text-foreground transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto px-6 py-5 flex-1">{children}</div>
+        <div className="overflow-y-auto px-5 py-4 flex-1">{children}</div>
       </div>
     </div>
   );

@@ -4,77 +4,169 @@
 
 @layer base {
   :root {
-    --background: 215 20% 95%; /* #f0f3f7 soft calm cool slate, gentle on the eyes */
-    --foreground: 216 20% 28%; /* #394454 soft slate text, NOT pitch black #000000 */
+    /* Notion Light Canvas & Palette */
+    --background: #ffffff;
+    --foreground: #37352f;
 
-    --card: 216 20% 99%; /* #fafbfd soft off-white card */
-    --card-foreground: 216 20% 28%;
+    --card: #ffffff;
+    --card-foreground: #37352f;
 
-    --popover: 216 20% 99%;
-    --popover-foreground: 216 20% 28%;
+    --popover: #ffffff;
+    --popover-foreground: #37352f;
 
-    --primary: 215 22% 38%; /* #4c5d73 matte slate */
-    --primary-foreground: 210 30% 98%;
+    --surface: #f6f5f4;
+    --surface-soft: #fafaf9;
 
-    --secondary: 214 20% 90%; /* #dfe5ec */
-    --secondary-foreground: 216 20% 28%;
+    --primary: #5645d4;
+    --primary-pressed: #4534b3;
+    --primary-foreground: #ffffff;
 
-    --muted: 214 20% 91%;
-    --muted-foreground: 215 14% 50%; /* #6f7c8d */
+    --secondary: #f6f5f4;
+    --secondary-foreground: #37352f;
 
-    --accent: 214 20% 91%;
-    --accent-foreground: 216 20% 28%;
+    --muted: #f6f5f4;
+    --muted-foreground: #787671;
 
-    --destructive: 354 55% 52%; /* #be4954 soft muted rose-red, not screaming neon */
-    --destructive-foreground: 210 30% 98%;
+    --accent: #f6f5f4;
+    --accent-foreground: #37352f;
 
-    --border: 214 18% 86%; /* #d6dce4 soft subtle border */
-    --input: 214 18% 86%;
-    --ring: 215 20% 45%;
+    --destructive: #e03131;
+    --destructive-foreground: #ffffff;
 
-    --radius: 0.875rem;
+    --border: #e5e3df;
+    --hairline: #e5e3df;
+    --hairline-strong: #c8c4be;
+    --input: #c8c4be;
+    --ring: #5645d4;
+
+    --radius: 8px;
   }
 
   .dark {
-    --background: 220 15% 15%; /* #21252d soft dark slate, NOT pitch black #000000! */
-    --foreground: 218 20% 82%; /* #c8d2de gentle readable slate, NOT blinding white! */
+    /* Notion Dark Canvas & Palette */
+    --background: #191919;
+    --foreground: #e3e2de;
 
-    --card: 220 16% 19%; /* #292f3a soft surface, low-contrast elevation */
-    --card-foreground: 218 20% 82%;
+    --card: #202020;
+    --card-foreground: #e3e2de;
 
-    --popover: 220 16% 19%;
-    --popover-foreground: 218 20% 82%;
+    --popover: #202020;
+    --popover-foreground: #e3e2de;
 
-    --primary: 215 22% 44%; /* #576b85 serene matte slate-blue */
-    --primary-foreground: 210 30% 98%;
+    --surface: #202020;
+    --surface-soft: #252525;
 
-    --secondary: 220 15% 23%; /* #323845 */
-    --secondary-foreground: 218 20% 82%;
+    --primary: #5645d4;
+    --primary-pressed: #4534b3;
+    --primary-foreground: #ffffff;
 
-    --muted: 220 15% 23%;
-    --muted-foreground: 218 15% 64%; /* #93a0b3 gentle gray-slate */
+    --secondary: #252525;
+    --secondary-foreground: #e3e2de;
 
-    --accent: 220 15% 24%;
-    --accent-foreground: 218 20% 86%;
+    --muted: #252525;
+    --muted-foreground: #9b9a97;
 
-    --destructive: 354 50% 64%; /* #d86d76 soft pastel rose, pleasant and calm */
-    --destructive-foreground: 210 30% 98%;
+    --accent: #2a2a2a;
+    --accent-foreground: #e3e2de;
 
-    --border: 220 14% 26%; /* #394150 soft subtle border */
-    --input: 220 14% 26%;
-    --ring: 215 22% 50%;
+    --destructive: #eb5757;
+    --destructive-foreground: #ffffff;
 
-    --radius: 0.875rem;
+    --border: #2f2f2f;
+    --hairline: #2f2f2f;
+    --hairline-strong: #373737;
+    --input: #373737;
+    --ring: #6952ec;
+
+    --radius: 8px;
   }
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  font-family: 'Notion Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Стилизация скроллбара */
+/* Notion Database property tag styles */
+.notion-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.notion-tag-mint {
+  background-color: #d9f3e1;
+  color: #1aae39;
+}
+.dark .notion-tag-mint {
+  background-color: rgba(26, 174, 57, 0.18);
+  color: #4cd964;
+}
+
+.notion-tag-peach {
+  background-color: #ffe8d4;
+  color: #dd5b00;
+}
+.dark .notion-tag-peach {
+  background-color: rgba(221, 91, 0, 0.18);
+  color: #ff9858;
+}
+
+.notion-tag-rose {
+  background-color: #fde0ec;
+  color: #a02e6d;
+}
+.dark .notion-tag-rose {
+  background-color: rgba(255, 100, 200, 0.18);
+  color: #ff85d5;
+}
+
+.notion-tag-lavender {
+  background-color: #e6e0f5;
+  color: #5645d4;
+}
+.dark .notion-tag-lavender {
+  background-color: rgba(86, 69, 212, 0.22);
+  color: #c4b5fd;
+}
+
+.notion-tag-sky {
+  background-color: #dcecfa;
+  color: #0075de;
+}
+.dark .notion-tag-sky {
+  background-color: rgba(0, 117, 222, 0.18);
+  color: #60a5fa;
+}
+
+.notion-tag-yellow {
+  background-color: #fef7d6;
+  color: #8f6b00;
+}
+.dark .notion-tag-yellow {
+  background-color: rgba(245, 215, 94, 0.18);
+  color: #fde047;
+}
+
+.notion-tag-gray {
+  background-color: #f0eeec;
+  color: #5d5b54;
+}
+.dark .notion-tag-gray {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #a4a097;
+}
+
+/* Notion Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -83,16 +175,15 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.3);
-  border-radius: 4px;
+  background: rgba(150, 145, 135, 0.25);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.6);
+  background: rgba(150, 145, 135, 0.45);
 }
 
-/* ЧИСТЫЙ СТИЛЬ ПЕЧАТИ (Официальные документы и отчеты) */
+/* Notion Clean Print Styles */
 @media print {
-  /* Скрыть навигацию, шапку, кнопки действий и скроллбары */
   header,
   aside,
   #mobile-menu-btn,
@@ -114,7 +205,7 @@ body {
   body {
     background: #ffffff !important;
     color: #000000 !important;
-    font-size: 11pt !important;
+    font-size: 10pt !important;
   }
 
   main {
@@ -125,12 +216,11 @@ body {
 
   .card,
   div[class*="border-border"] {
-    border: 1px solid #d4d4d8 !important;
+    border: 1px solid #e5e3df !important;
     box-shadow: none !important;
     background: #ffffff !important;
   }
 
-  /* Показать официальный печатный заголовок */
   .print-only {
     display: block !important;
   }
@@ -141,16 +231,15 @@ body {
   }
 
   th, td {
-    border: 1px solid #e4e4e7 !important;
+    border: 1px solid #e5e3df !important;
     padding: 6px 8px !important;
-    color: #09090b !important;
+    color: #1a1a1a !important;
   }
 
   th {
-    background-color: #f4f4f5 !important;
+    background-color: #f6f5f4 !important;
   }
 
-  /* Разрыв страницы */
   .page-break {
     page-break-before: always;
   }

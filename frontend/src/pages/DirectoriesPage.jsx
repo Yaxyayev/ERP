@@ -162,50 +162,58 @@ export function DirectoriesPage() {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="inline-flex items-center rounded-lg border border-border bg-muted p-1 text-muted-foreground text-xs">
+      {/* Tabs (Notion pill-tabs) */}
+      <div className="inline-flex items-center gap-1.5 flex-wrap">
         <button
           onClick={() => setActiveTab('clients')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'clients' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'clients'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Клиенты ({clients.length})
         </button>
         <button
           onClick={() => setActiveTab('vehicles')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'vehicles' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'vehicles'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Автопарк ({vehicles.length})
         </button>
         <button
           onClick={() => setActiveTab('factories')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'factories' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'factories'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Заводы ({factories.length})
         </button>
         <button
           onClick={() => setActiveTab('products')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'products' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'products'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Каталог товаров ({products.length})
         </button>
       </div>
 
-      {/* 1. КЛИЕНТЫ */}
+      {/* 1. КЛИЕНТЫ (Notion Database Table) */}
       {activeTab === 'clients' && (
-        <Card className="border-border">
-          <CardContent className="p-0 sm:p-4">
+        <Card className="border-hairline rounded-lg">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-xs text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-4">Имя / Организация</th>
                     <th className="py-2.5 px-3">Телефон</th>
                     <th className="py-2.5 px-3 text-right">Текущий баланс</th>
@@ -213,24 +221,24 @@ export function DirectoriesPage() {
                     <th className="py-2.5 px-4 text-center">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border text-xs">
+                <tbody className="divide-y divide-hairline-soft">
                   {clients.map(c => (
-                    <tr key={c.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-foreground">
+                    <tr key={c.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-4 font-semibold text-charcoal dark:text-foreground">
                         {c.name}
-                        {c.company_name && <span className="block text-[11px] text-muted-foreground font-normal">{c.company_name}</span>}
+                        {c.company_name && <span className="block text-[11px] text-steel font-normal">{c.company_name}</span>}
                       </td>
-                      <td className="py-3 px-3 text-muted-foreground">{c.phone || '—'}</td>
-                      <td className={`py-3 px-3 text-right font-medium ${c.balance < 0 ? 'text-destructive font-semibold' : 'text-foreground'}`}>
+                      <td className="py-2.5 px-3 text-steel">{c.phone || '—'}</td>
+                      <td className={`py-2.5 px-3 text-right font-medium ${c.balance < 0 ? 'text-destructive font-semibold' : 'text-charcoal dark:text-foreground'}`}>
                         {formatCurrency(c.balance)}
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">{c.notes || '—'}</td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-2.5 px-4 text-steel">{c.notes || '—'}</td>
+                      <td className="py-2.5 px-4 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(c)}>
-                            <Edit2 className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => openEditModal(c)}>
+                            <Edit2 className="h-3.5 w-3.5 text-steel hover:text-foreground" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(c.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => handleDelete(c.id)}>
                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
                           </Button>
                         </div>
@@ -244,14 +252,14 @@ export function DirectoriesPage() {
         </Card>
       )}
 
-      {/* 2. АВТОПАРК */}
+      {/* 2. АВТОПАРК (Notion Database Table) */}
       {activeTab === 'vehicles' && (
-        <Card className="border-border">
-          <CardContent className="p-0 sm:p-4">
+        <Card className="border-hairline rounded-lg">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-xs text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-4">Гос. номер</th>
                     <th className="py-2.5 px-3">Модель</th>
                     <th className="py-2.5 px-3">Тип</th>
@@ -260,22 +268,22 @@ export function DirectoriesPage() {
                     <th className="py-2.5 px-4 text-center">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border text-xs">
+                <tbody className="divide-y divide-hairline-soft">
                   {vehicles.map(v => (
-                    <tr key={v.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-foreground">{v.plate_number}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{v.model || '—'}</td>
-                      <td className="py-3 px-3">
-                        {v.is_company_owned ? <Badge variant="outline">Собственная</Badge> : <Badge variant="secondary">Наёмная</Badge>}
+                    <tr key={v.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-4 font-mono font-semibold text-foreground">{v.plate_number}</td>
+                      <td className="py-2.5 px-3 text-steel">{v.model || '—'}</td>
+                      <td className="py-2.5 px-3">
+                        {v.is_company_owned ? <Badge variant="mint">Собственная</Badge> : <Badge variant="sky">Наёмная</Badge>}
                       </td>
-                      <td className="py-3 px-3">{v.driver_name || '—'}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{v.driver_phone || '—'}</td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-2.5 px-3 font-medium text-foreground">{v.driver_name || '—'}</td>
+                      <td className="py-2.5 px-3 text-steel">{v.driver_phone || '—'}</td>
+                      <td className="py-2.5 px-4 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(v)}>
-                            <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => openEditModal(v)}>
+                            <Edit2 className="h-3.5 w-3.5 text-steel" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(v.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => handleDelete(v.id)}>
                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
                           </Button>
                         </div>
@@ -289,14 +297,14 @@ export function DirectoriesPage() {
         </Card>
       )}
 
-      {/* 3. ЗАВОДЫ */}
+      {/* 3. ЗАВОДЫ (Notion Database Table) */}
       {activeTab === 'factories' && (
-        <Card className="border-border">
-          <CardContent className="p-0 sm:p-4">
+        <Card className="border-hairline rounded-lg">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-xs text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-4">Завод</th>
                     <th className="py-2.5 px-3">Контакт</th>
                     <th className="py-2.5 px-3">Телефон</th>
@@ -304,19 +312,19 @@ export function DirectoriesPage() {
                     <th className="py-2.5 px-4 text-center">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border text-xs">
+                <tbody className="divide-y divide-hairline-soft">
                   {factories.map(f => (
-                    <tr key={f.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-foreground">{f.name}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{f.contact_person || '—'}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{f.phone || '—'}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{f.address || '—'}</td>
-                      <td className="py-3 px-4 text-center">
+                    <tr key={f.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-4 font-semibold text-charcoal dark:text-foreground">{f.name}</td>
+                      <td className="py-2.5 px-3 text-steel">{f.contact_person || '—'}</td>
+                      <td className="py-2.5 px-3 text-steel">{f.phone || '—'}</td>
+                      <td className="py-2.5 px-4 text-steel">{f.address || '—'}</td>
+                      <td className="py-2.5 px-4 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(f)}>
-                            <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => openEditModal(f)}>
+                            <Edit2 className="h-3.5 w-3.5 text-steel hover:text-foreground" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(f.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => handleDelete(f.id)}>
                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
                           </Button>
                         </div>
@@ -330,14 +338,14 @@ export function DirectoriesPage() {
         </Card>
       )}
 
-      {/* 4. ТОВАРЫ */}
+      {/* 4. ТОВАРЫ (Notion Database Table) */}
       {activeTab === 'products' && (
-        <Card className="border-border">
-          <CardContent className="p-0 sm:p-4">
+        <Card className="border-hairline rounded-lg">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-xs text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-4">Наименование</th>
                     <th className="py-2.5 px-3">Категория</th>
                     <th className="py-2.5 px-3">Завод</th>
@@ -346,25 +354,31 @@ export function DirectoriesPage() {
                     <th className="py-2.5 px-4 text-center">Действия</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border text-xs">
+                <tbody className="divide-y divide-hairline-soft">
                   {products.map(p => (
-                    <tr key={p.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-foreground">
+                    <tr key={p.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-4 font-semibold text-charcoal dark:text-foreground">
                         {p.name}
-                        {p.cement_grade && <span className="ml-1 text-muted-foreground text-[11px]">[{p.cement_grade}]</span>}
+                        {p.cement_grade && <span className="ml-1 text-steel text-[11px] font-normal">[{p.cement_grade}]</span>}
                       </td>
-                      <td className="py-3 px-3 text-muted-foreground">
-                        {p.category === 'cement' ? 'Цемент' : p.category === 'packaging' ? 'Тара' : 'Добавка'}
+                      <td className="py-2.5 px-3">
+                        {p.category === 'cement' ? (
+                          <Badge variant="mint">Цемент</Badge>
+                        ) : p.category === 'packaging' ? (
+                          <Badge variant="peach">Тара</Badge>
+                        ) : (
+                          <Badge variant="lavender">Добавка</Badge>
+                        )}
                       </td>
-                      <td className="py-3 px-3 text-muted-foreground">{p.factory_name || '—'}</td>
-                      <td className="py-3 px-3 text-right text-muted-foreground">{formatCurrency(p.purchase_price)}</td>
-                      <td className="py-3 px-3 text-right font-medium text-foreground">{formatCurrency(p.selling_price)}</td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-2.5 px-3 text-steel">{p.factory_name || '—'}</td>
+                      <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(p.purchase_price)}</td>
+                      <td className="py-2.5 px-3 text-right font-medium text-charcoal dark:text-foreground">{formatCurrency(p.selling_price)}</td>
+                      <td className="py-2.5 px-4 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(p)}>
-                            <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => openEditModal(p)}>
+                            <Edit2 className="h-3.5 w-3.5 text-steel hover:text-foreground" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(p.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => handleDelete(p.id)}>
                             <Trash2 className="h-3.5 w-3.5 text-destructive" />
                           </Button>
                         </div>
@@ -448,7 +462,7 @@ export function DirectoriesPage() {
             </>
           )}
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-border">
+          <div className="flex justify-end gap-2 pt-3 border-t border-hairline">
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Отмена</Button>
             <Button type="submit" isLoading={submitting}>Сохранить</Button>
           </div>

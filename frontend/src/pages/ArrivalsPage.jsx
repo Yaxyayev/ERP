@@ -151,17 +151,17 @@ export function ArrivalsPage() {
         </div>
       )}
 
-      <Card className="border-border">
-        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm font-semibold">Реестр поступлений</CardTitle>
+      <Card className="border-hairline rounded-lg">
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
+          <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Реестр поступлений</CardTitle>
           <Badge variant="outline">{arrivals.length} записей</Badge>
         </CardHeader>
 
-        <CardContent className="p-0 sm:p-4 pt-0">
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border text-muted-foreground font-medium">
+                <tr className="border-b border-hairline bg-surface text-steel font-medium">
                   <th className="py-2.5 px-3">Дата</th>
                   <th className="py-2.5 px-3">Завод</th>
                   <th className="py-2.5 px-3">Продукция</th>
@@ -173,26 +173,30 @@ export function ArrivalsPage() {
                   <th className="py-2.5 px-2 text-center">Куда</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border text-xs">
+              <tbody className="divide-y divide-hairline-soft text-xs">
                 {arrivals.map((arr) => (
-                  <tr key={arr.id} className="hover:bg-muted/50 transition-colors">
-                    <td className="py-3 px-4 text-muted-foreground">{formatDate(arr.date)}</td>
-                    <td className="py-3 px-3 font-medium text-foreground">{arr.factory_name}</td>
-                    <td className="py-3 px-3">
-                      {arr.product_name}
-                      {arr.cement_grade && <span className="text-muted-foreground ml-1">[{arr.cement_grade}]</span>}
+                  <tr key={arr.id} className="hover:bg-surface/60 transition-colors">
+                    <td className="py-2.5 px-3 text-steel">{formatDate(arr.date)}</td>
+                    <td className="py-2.5 px-3 font-medium text-foreground">{arr.factory_name}</td>
+                    <td className="py-2.5 px-3">
+                      <span className="text-charcoal dark:text-foreground">{arr.product_name}</span>
+                      {arr.cement_grade && <span className="text-steel ml-1 font-mono">[{arr.cement_grade}]</span>}
                     </td>
-                    <td className="py-3 px-3">
-                      {arr.packaging_type === 'bulk' ? 'Навал' : 'Мешки (50кг)'}
+                    <td className="py-2.5 px-2">
+                      {arr.packaging_type === 'bulk' ? (
+                        <Badge variant="peach" className="text-[10px]">Навал</Badge>
+                      ) : (
+                        <Badge variant="lavender" className="text-[10px]">Мешки (50кг)</Badge>
+                      )}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-foreground">{formatNumber(arr.tonnage)} т</td>
-                    <td className="py-3 px-4 text-right text-muted-foreground">{formatCurrency(arr.price_per_ton)}</td>
-                    <td className="py-3 px-4 text-right font-bold text-foreground">{formatCurrency(arr.total_amount)}</td>
-                    <td className="py-3 px-3 font-mono">{arr.vehicle_number || '—'}</td>
-                    <td className="py-3 px-3 text-center">
-                      {arr.destination === 'warehouse' && <Badge variant="outline">Склад</Badge>}
-                      {arr.destination === 'ticket' && <Badge variant="secondary">Тикет {arr.ticket_number ? `№${arr.ticket_number}` : ''}</Badge>}
-                      {arr.destination === 'direct' && <Badge variant="outline">Напрямую</Badge>}
+                    <td className="py-2.5 px-3 text-right font-semibold text-foreground">{formatNumber(arr.tonnage)} т</td>
+                    <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(arr.price_per_ton)}</td>
+                    <td className="py-2.5 px-3 text-right font-semibold text-foreground">{formatCurrency(arr.total_amount)}</td>
+                    <td className="py-2.5 px-2 font-mono text-steel">{arr.vehicle_number || '—'}</td>
+                    <td className="py-2.5 px-2 text-center">
+                      {arr.destination === 'warehouse' && <Badge variant="mint">Склад</Badge>}
+                      {arr.destination === 'ticket' && <Badge variant="sky">Тикет {arr.ticket_number ? `№${arr.ticket_number}` : ''}</Badge>}
+                      {arr.destination === 'direct' && <Badge variant="peach">Напрямую</Badge>}
                     </td>
                   </tr>
                 ))}

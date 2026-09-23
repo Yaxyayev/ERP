@@ -43,22 +43,22 @@ export default function KnowledgeBasePage() {
       title: 'Обзор архитектуры системы «ERP Цемент»',
       description: 'Назначение платформы, распределение обязанностей и ключевые роли пользователей.',
       content: (
-        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-3 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             Платформа <strong>«ERP Цемент»</strong> синхронизирует фактические остатки на складе, прямые заводские квоты (тикеты), весовой контроль цементовозов и кассовые операции в режиме реального времени.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 my-2">
-            <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/25">
-              <span className="font-bold text-indigo-400 block text-xs">Администратор</span>
-              <p className="text-[11px] text-muted-foreground mt-1">Полный доступ к системе, журнал аудита всех действий, управление учетными записями персонала, выгрузка бэкапов.</p>
+            <div className="p-3 rounded-lg bg-tint-lavender border border-hairline">
+              <span className="font-bold text-primary block text-xs">Администратор</span>
+              <p className="text-[11px] text-steel mt-1">Полный доступ к системе, журнал аудита всех действий, управление учетными записями персонала, выгрузка бэкапов.</p>
             </div>
-            <div className="p-3 rounded-xl bg-primary/10 border border-primary/25">
-              <span className="font-bold text-primary block text-xs">Оператор склада</span>
-              <p className="text-[11px] text-muted-foreground mt-1">Оформление сделок отгрузки, выписка товарно-транспортных накладных (ТТН), оприходование партий в силосы.</p>
+            <div className="p-3 rounded-lg bg-tint-sky border border-hairline">
+              <span className="font-bold text-sky-600 dark:text-sky-300 block text-xs">Оператор склада</span>
+              <p className="text-[11px] text-steel mt-1">Оформление сделок отгрузки, выписка товарно-транспортных накладных (ТТН), оприходование партий в силосы.</p>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
-              <span className="font-bold text-emerald-400 block text-xs">Бухгалтер</span>
-              <p className="text-[11px] text-muted-foreground mt-1">Приходные и расходные кассовые ордера, погашение дебиторской задолженности, учет валютных операций (UZS/USD).</p>
+            <div className="p-3 rounded-lg bg-tint-mint border border-hairline">
+              <span className="font-bold text-emerald-600 dark:text-emerald-300 block text-xs">Бухгалтер</span>
+              <p className="text-[11px] text-steel mt-1">Приходные и расходные кассовые ордера, погашение дебиторской задолженности, учет валютных операций (UZS/USD).</p>
             </div>
           </div>
         </div>
@@ -70,8 +70,8 @@ export default function KnowledgeBasePage() {
       title: 'Горячие клавиши и навигация по интерфейсу',
       description: 'Быстрые действия и рекомендации по эффективному использованию приложения.',
       content: (
-        <div className="space-y-2 text-xs text-muted-foreground">
-          <p className="text-foreground">Интерфейс адаптирован для быстрого ввода информации оператором весовой:</p>
+        <div className="space-y-2 text-xs text-steel">
+          <p className="text-charcoal dark:text-foreground">Интерфейс адаптирован для быстрого ввода информации оператором весовой:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>⌘K или Ctrl+K</strong>: Открытие командной строки глобального поиска по контрагентам, автопарку и накладным.</li>
             <li><strong>⌘B или Ctrl+B</strong>: Свернуть или развернуть боковое меню для увеличения ширины рабочих таблиц.</li>
@@ -87,12 +87,12 @@ export default function KnowledgeBasePage() {
       title: 'Складской учет цемента и мониторинг силосов',
       description: 'Правила оприходования, неснижаемый остаток и программная защита от отрицательного баланса.',
       content: (
-        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-3 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             В разделе <strong>«Склад»</strong> в режиме реального времени отображаются остатки всех позиций: насыпной цемент (М400, М500, Сульфатостойкий), тарированный цемент в мешках по 50 кг и химические добавки.
           </p>
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-foreground text-xs leading-relaxed">
-            <strong className="text-amber-400">⚠️ Защита от дефицита:</strong> Система программно запрещает отгрузку со склада, если запрашиваемый тоннаж превышает фактический остаток в силосе. В таком случае система уведомит оператора точным сообщением с указанием доступного объема.
+          <div className="p-3 rounded-lg bg-tint-peach border border-hairline text-charcoal dark:text-foreground text-xs leading-relaxed">
+            <strong className="text-[#dd5b00]">⚠️ Защита от дефицита:</strong> Система программно запрещает отгрузку со склада, если запрашиваемый тоннаж превышает фактический остаток в силосе. В таком случае система уведомит оператора точным сообщением с указанием доступного объема.
           </div>
           <p>
             При достижении неснижаемого остатка карточка силоса подсвечивается янтарным индикатором, сигнализируя о необходимости заказа новой партии с завода.
@@ -106,21 +106,21 @@ export default function KnowledgeBasePage() {
       title: 'Заводские квоты (Тикеты) и брокерский счет',
       description: 'Биржевые закупки, прямая отгрузка клиенту с завода и возврат неизрасходованных средств.',
       content: (
-        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-3 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             <strong>Тикет</strong> — предоплаченный объем цемента на заводе-производителе (Кизилкумцемент, Бекабадцемент, Алмалык).
           </p>
           <div className="space-y-1.5">
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">1. Оформление прихода по тикету:</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">1. Оформление прихода по тикету:</span>
               <p className="mt-0.5">В форме оприходования выберите «Назначение: Заводской тикет (квота)» и укажите биржевой номер.</p>
             </div>
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">2. Отгрузка с завода напрямую:</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">2. Отгрузка с завода напрямую:</span>
               <p className="mt-0.5">При создании сделки выберите источник «Заводской тикет». Тоннаж спишется с остатка квоты, не затрагивая физический склад.</p>
             </div>
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">3. Возврат остатка:</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">3. Возврат остатка:</span>
               <p className="mt-0.5">При закрытии квоты оператор нажимает «Возврат остатка». Неиспользованная сумма автоматически возвращается на брокерский счет и учитывается в кассе.</p>
             </div>
           </div>
@@ -133,23 +133,23 @@ export default function KnowledgeBasePage() {
       title: 'Оформление продажи, выборка и печать ТТН',
       description: 'Пошаговый процесс создания сделки, расчет тарифов на доставку и проведение оплаты.',
       content: (
-        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">Для проведения сделки нажмите кнопку <strong>«+ Оформить сделку»</strong>:</p>
+        <div className="space-y-3 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">Для проведения сделки нажмите кнопку <strong>«+ Оформить сделку»</strong>:</p>
           <div className="space-y-1.5">
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">Шаг 1: Контрагент и номенклатура</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">Шаг 1: Контрагент и номенклатура</span>
               <p className="mt-0.5">Выберите покупателя из справочника, марку цемента, тип тары и объем партии в тоннах.</p>
             </div>
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">Шаг 2: Доставка и логистика</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">Шаг 2: Доставка и логистика</span>
               <p className="mt-0.5">Выберите «Самовывоз» или «Доставка автопарком». При доставке транспортом компании укажите тариф за тонну — система рассчитает транспортные услуги автоматически.</p>
             </div>
-            <div className="p-2.5 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground">Шаг 3: Оплата и статус</span>
+            <div className="p-2.5 rounded-lg bg-surface border border-hairline">
+              <span className="font-semibold text-charcoal dark:text-foreground">Шаг 3: Оплата и статус</span>
               <p className="mt-0.5">Укажите внесенную клиентом сумму. При неполной оплате остаток автоматически зафиксируется в дебиторской задолженности контрагента.</p>
             </div>
           </div>
-          <p className="text-foreground">Сразу после сохранения открывается официальная форма товарно-транспортной накладной (ТТН), готовая к печати.</p>
+          <p className="text-charcoal dark:text-foreground">Сразу после сохранения открывается официальная форма товарно-транспортной накладной (ТТН), готовая к печати.</p>
         </div>
       )
     },
@@ -159,8 +159,8 @@ export default function KnowledgeBasePage() {
       title: 'Учет автопарка и весовой контроль',
       description: 'Собственный и привлеченный транспорт, весовые талоны и учет рейсов цементовозов.',
       content: (
-        <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-2 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             Справочник автотранспорта разделяет тягачи на <strong>Собственный автопарк</strong> и <strong>Наемный / Транспорт покупателя</strong>.
           </p>
           <p>
@@ -175,8 +175,8 @@ export default function KnowledgeBasePage() {
       title: 'Касса, валютные расчеты и управление долгами',
       description: 'Учет кассовых ордеров (UZS/USD), дебиторка клиентов и погашение долгов.',
       content: (
-        <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">Раздел <strong>«Финансы»</strong> объединяет финансовые потоки компании:</p>
+        <div className="space-y-2 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">Раздел <strong>«Финансы»</strong> объединяет финансовые потоки компании:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Кассовые ордера:</strong> Приход (оплата за цемент, логистика) и расход (ГСМ, запчасти, питание водителей, зарплата).</li>
             <li><strong>Мультивалютность:</strong> Поддержка взаиморасчетов в USD с автоматической фиксацией курса конвертации.</li>
@@ -191,8 +191,8 @@ export default function KnowledgeBasePage() {
       title: 'Управление пользователями и журнал аудита',
       description: 'Создание учетных записей персонала, назначение ролей и мониторинг действий.',
       content: (
-        <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-2 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             Раздел <strong>«Пользователи и Аудит»</strong> доступен только администратору:
           </p>
           <ul className="list-disc pl-5 space-y-1">
@@ -209,11 +209,11 @@ export default function KnowledgeBasePage() {
       title: 'Резервное копирование и сохранность базы данных',
       description: 'Снимки SQLite в режиме WAL, выгрузка бэкапов и регламент обслуживания.',
       content: (
-        <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
-          <p className="text-foreground">
+        <div className="space-y-3 text-xs text-steel leading-relaxed">
+          <p className="text-charcoal dark:text-foreground">
             База данных SQLite функционирует в режиме <strong>Write-Ahead Logging (WAL)</strong>, гарантируя целостность транзакций даже при внезапных сбоях электропитания.
           </p>
-          <div className="p-3 rounded-xl bg-muted border border-border text-foreground">
+          <div className="p-3 rounded-lg bg-surface border border-hairline text-charcoal dark:text-foreground">
             <span className="font-semibold block mb-1">Создание резервной копии:</span>
             Нажмите кнопку «Бэкап базы (.sqlite)» в верхней панели. Браузер выгрузит полный дамп с меткой даты (например, <code>erp_cement_backup_2026-09-22.sqlite</code>).
           </div>
@@ -238,18 +238,18 @@ export default function KnowledgeBasePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-xl font-bold tracking-tight text-charcoal dark:text-foreground flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
             База знаний и инструкция
           </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-xs text-steel mt-0.5">
             Руководство пользователя по управлению складом, квотами, логистикой и кассой
           </p>
         </div>
 
         <a
           href="/api/backup"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground text-xs font-medium transition-colors shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-hairline bg-surface hover:bg-surface/80 text-charcoal dark:text-foreground text-xs font-medium transition-colors shadow-xs"
         >
           <Download className="w-3.5 h-3.5 text-primary" />
           Скачать бэкап базы
@@ -257,21 +257,21 @@ export default function KnowledgeBasePage() {
       </div>
 
       {/* Search Input */}
-      <Card className="border-border">
+      <Card className="border-hairline rounded-lg shadow-notion-card">
         <CardContent className="p-3">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-steel" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Поиск по инструкции (например: тикет, ТТН, силос, бэкап, касса, пароль)..."
-              className="flex h-8 w-full rounded-lg border border-input bg-background px-3 text-xs text-foreground placeholder:text-muted-foreground/60 pl-9 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+              className="flex h-8 w-full rounded-md border border-hairline bg-surface px-3 text-xs text-charcoal dark:text-foreground placeholder:text-steel pl-9 focus-visible:outline-none focus:border-primary"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-foreground bg-muted px-1.5 py-0.5 rounded"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-steel hover:text-foreground bg-surface border border-hairline px-1.5 py-0.5 rounded-md"
               >
                 Очистить
               </button>
@@ -280,8 +280,8 @@ export default function KnowledgeBasePage() {
         </CardContent>
       </Card>
 
-      {/* Category Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+      {/* Category Pills (Notion Pill-tabs) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = activeCategory === cat.id;
@@ -289,13 +289,9 @@ export default function KnowledgeBasePage() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border ${
-                isActive
-                  ? 'bg-primary/20 text-foreground font-semibold border-primary/30 shadow-xs'
-                  : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted border-border'
-              }`}
+              className={`pill-tab ${isActive ? 'active' : ''}`}
             >
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className="w-3.5 h-3.5 inline mr-1.5" />
               {cat.label}
             </button>
           );
@@ -305,10 +301,10 @@ export default function KnowledgeBasePage() {
       {/* Guide Content Accordion */}
       <div className="space-y-3">
         {filteredArticles.length === 0 ? (
-          <Card className="border-border p-8 text-center text-muted-foreground">
-            <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-xs font-medium text-foreground">Ничего не найдено по запросу «{searchQuery}»</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Попробуйте изменить формулировку или выбрать категорию «Все разделы»</p>
+          <Card className="border-hairline rounded-lg shadow-notion-card p-8 text-center text-steel">
+            <Info className="w-6 h-6 mx-auto mb-2 text-steel" />
+            <p className="text-xs font-medium text-charcoal dark:text-foreground">Ничего не найдено по запросу «{searchQuery}»</p>
+            <p className="text-[11px] text-steel mt-0.5">Попробуйте изменить формулировку или выбрать категорию «Все разделы»</p>
           </Card>
         ) : (
           filteredArticles.map((art) => {
@@ -316,27 +312,27 @@ export default function KnowledgeBasePage() {
             return (
               <Card
                 key={art.id}
-                className="border-border overflow-hidden"
+                className="border-hairline rounded-lg shadow-notion-card overflow-hidden"
               >
                 <button
                   onClick={() => toggleSection(art.id)}
-                  className="w-full flex items-start justify-between p-4 text-left hover:bg-muted/40 transition-colors"
+                  className="w-full flex items-start justify-between p-4 text-left hover:bg-surface/60 transition-colors"
                 >
                   <div className="pr-4">
-                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-charcoal dark:text-foreground flex items-center gap-2">
                       {art.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs text-steel mt-0.5">
                       {art.description}
                     </p>
                   </div>
-                  <div className="p-1 rounded-md text-muted-foreground shrink-0 mt-0.5">
+                  <div className="p-1 rounded-md text-steel shrink-0 mt-0.5">
                     {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-4 pb-4 pt-2 border-t border-border bg-muted/20">
+                  <div className="px-4 pb-4 pt-3 border-t border-hairline bg-surface/30">
                     {art.content}
                   </div>
                 )}

@@ -445,12 +445,14 @@ export function WarehousePage({ onNavigateToArrivals }) {
         </Card>
       </div>
 
-      {/* Tabs Switcher */}
-      <div className="inline-flex items-center rounded-lg border border-border bg-muted p-1 text-muted-foreground text-xs no-print">
+      {/* Tabs Switcher (Notion pill-tabs) */}
+      <div className="inline-flex items-center gap-1.5 no-print">
         <button
           onClick={() => setViewMode('stocks')}
-          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-all ${
-            viewMode === 'stocks' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all inline-flex items-center gap-1.5 ${
+            viewMode === 'stocks'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           <Package className="h-3.5 w-3.5" />
@@ -458,8 +460,10 @@ export function WarehousePage({ onNavigateToArrivals }) {
         </button>
         <button
           onClick={() => setViewMode('tickets')}
-          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-all ${
-            viewMode === 'tickets' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all inline-flex items-center gap-1.5 ${
+            viewMode === 'tickets'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
@@ -467,8 +471,10 @@ export function WarehousePage({ onNavigateToArrivals }) {
         </button>
         <button
           onClick={() => setViewMode('movements')}
-          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-medium transition-all ${
-            viewMode === 'movements' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all inline-flex items-center gap-1.5 ${
+            viewMode === 'movements'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           <History className="h-3.5 w-3.5" />
@@ -478,29 +484,29 @@ export function WarehousePage({ onNavigateToArrivals }) {
 
       {/* Alert Banners */}
       {actionSuccess && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-muted border border-border text-foreground text-xs font-medium no-print">
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+        <div className="flex items-center gap-2 p-3 rounded-md bg-tint-mint border border-brand-green/20 text-foreground text-xs font-medium no-print">
+          <CheckCircle2 className="h-4 w-4 text-brand-green shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
       {actionError && (
-        <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium no-print">
+        <div className="flex items-center gap-2 p-3 rounded-md bg-tint-rose border border-destructive/20 text-destructive text-xs font-medium no-print">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span>{actionError}</span>
         </div>
       )}
 
-      {/* 1. ФАКТИЧЕСКИЙ СКЛАД */}
+      {/* 1. ФАКТИЧЕСКИЙ СКЛАД (Notion Database Table) */}
       {viewMode === 'stocks' && (
-        <Card className="border-border">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm font-semibold">Номенклатура и остатки</CardTitle>
+        <Card className="border-hairline rounded-lg">
+          <CardHeader className="p-4 pb-2 border-b border-hairline bg-surface">
+            <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Номенклатура и остатки</CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4 pt-0">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-3">Наименование</th>
                     <th className="py-2.5 px-2">Категория</th>
                     <th className="py-2.5 px-2">Завод</th>
@@ -511,28 +517,28 @@ export function WarehousePage({ onNavigateToArrivals }) {
                     <th className="py-2.5 px-2 text-center">Статус</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-hairline-soft">
                   {stocks.map((item) => (
-                    <tr key={item.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-2.5 px-3 font-semibold text-foreground">
+                    <tr key={item.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-3 font-semibold text-charcoal dark:text-foreground">
                         {item.name}
                         {item.cement_grade && (
-                          <span className="ml-1 text-[11px] font-mono text-muted-foreground">
+                          <span className="ml-1 text-[11px] font-mono text-steel">
                             [{item.cement_grade}]
                           </span>
                         )}
                       </td>
-                      <td className="py-2.5 px-2 text-muted-foreground">
+                      <td className="py-2.5 px-2 text-steel">
                         {item.category === 'cement' ? 'Цемент' : item.category === 'packaging' ? 'Тара' : 'Добавки'}
                       </td>
-                      <td className="py-2.5 px-2 text-foreground">
+                      <td className="py-2.5 px-2 text-charcoal dark:text-foreground">
                         {item.factory_name || '—'}
                       </td>
                       <td className="py-2.5 px-2">
                         {item.packaging_type === 'bulk' ? (
-                          <Badge variant="outline" className="text-[10px]">Навал</Badge>
+                          <Badge variant="peach" className="text-[10px]">Навал</Badge>
                         ) : item.packaging_type === 'bag' ? (
-                          <Badge variant="secondary" className="text-[10px]">Мешок</Badge>
+                          <Badge variant="lavender" className="text-[10px]">Мешок</Badge>
                         ) : '—'}
                       </td>
                       <td className="py-2.5 px-3 text-right font-bold text-foreground">
@@ -540,7 +546,7 @@ export function WarehousePage({ onNavigateToArrivals }) {
                           {formatNumber(item.current_stock)} {item.unit}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-right text-muted-foreground">
+                      <td className="py-2.5 px-3 text-right text-steel">
                         {formatCurrency(item.purchase_price)}
                       </td>
                       <td className="py-2.5 px-3 text-right font-medium text-foreground">
@@ -548,9 +554,9 @@ export function WarehousePage({ onNavigateToArrivals }) {
                       </td>
                       <td className="py-2.5 px-2 text-center">
                         {item.current_stock <= item.min_stock_alert ? (
-                          <Badge variant="destructive" className="text-[10px]">Мало</Badge>
+                          <Badge variant="rose" className="text-[10px]">Мало</Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px]">Норма</Badge>
+                          <Badge variant="mint" className="text-[10px]">Норма</Badge>
                         )}
                       </td>
                     </tr>
@@ -564,15 +570,15 @@ export function WarehousePage({ onNavigateToArrivals }) {
 
       {/* 2. ТИКЕТЫ (КВОТЫ С ВОЗВРАТОМ НА БРОКЕРСКИЙ СЧЕТ) */}
       {viewMode === 'tickets' && (
-        <Card className="border-border">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm font-semibold">Реестр квот (Тикеты)</CardTitle>
+        <Card className="border-hairline rounded-lg">
+          <CardHeader className="p-4 pb-2 border-b border-hairline bg-surface">
+            <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Реестр квот (Тикеты)</CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4 pt-0">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-3">№ Тикета</th>
                     <th className="py-2.5 px-3">Завод</th>
                     <th className="py-2.5 px-3">Товар</th>
@@ -584,24 +590,24 @@ export function WarehousePage({ onNavigateToArrivals }) {
                     <th className="py-2.5 px-3 text-center no-print">Действие</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border text-xs">
+                <tbody className="divide-y divide-hairline-soft text-xs">
                   {tickets.map((t) => (
-                    <tr key={t.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-mono font-semibold text-foreground">
+                    <tr key={t.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-3 font-mono font-semibold text-foreground">
                         {t.ticket_number}
                       </td>
-                      <td className="py-3 px-3 font-medium text-foreground">{t.factory_name}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{t.product_name}</td>
-                      <td className="py-3 px-3 text-right text-muted-foreground">{formatNumber(t.initial_tonnage)} т</td>
-                      <td className="py-3 px-3 text-right font-bold text-foreground">{formatNumber(t.remaining_tonnage)} т</td>
-                      <td className="py-3 px-3 text-right text-muted-foreground">{formatCurrency(t.price_per_ton)}</td>
-                      <td className="py-3 px-4 text-right font-bold text-foreground">{formatCurrency(t.remaining_amount)}</td>
-                      <td className="py-3 px-3 text-center">
-                        {t.status === 'active' && <Badge variant="outline">Активен</Badge>}
-                        {t.status === 'completed' && <Badge variant="secondary">Отгружен</Badge>}
-                        {t.status === 'returned' && <Badge variant="destructive">Возвращен</Badge>}
+                      <td className="py-2.5 px-3 font-medium text-foreground">{t.factory_name}</td>
+                      <td className="py-2.5 px-3 text-steel">{t.product_name}</td>
+                      <td className="py-2.5 px-3 text-right text-steel">{formatNumber(t.initial_tonnage)} т</td>
+                      <td className="py-2.5 px-3 text-right font-semibold text-foreground">{formatNumber(t.remaining_tonnage)} т</td>
+                      <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(t.price_per_ton)}</td>
+                      <td className="py-2.5 px-4 text-right font-semibold text-foreground">{formatCurrency(t.remaining_amount)}</td>
+                      <td className="py-2.5 px-3 text-center">
+                        {t.status === 'active' && <Badge variant="mint">Активен</Badge>}
+                        {t.status === 'completed' && <Badge variant="sky">Отгружен</Badge>}
+                        {t.status === 'returned' && <Badge variant="rose">Возвращен</Badge>}
                       </td>
-                      <td className="py-3 px-3 text-center no-print">
+                      <td className="py-2.5 px-3 text-center no-print">
                         {t.status === 'active' && t.remaining_tonnage > 0 ? (
                           <Button
                             size="sm"
@@ -610,10 +616,10 @@ export function WarehousePage({ onNavigateToArrivals }) {
                               setReturnTicketModal(t);
                               setReturnComment('');
                             }}
-                            className="h-7 px-2 text-xs font-medium border-border hover:bg-muted"
+                            className="h-6 px-2 text-xs font-medium border-hairline"
                             title="Вернуть остаток средств на брокерский счет"
                           >
-                            <RotateCcw className="h-3 w-3 mr-1 text-muted-foreground" />
+                            <RotateCcw className="h-3 w-3 mr-1 text-steel" />
                             Возврат
                           </Button>
                         ) : '—'}
@@ -629,15 +635,15 @@ export function WarehousePage({ onNavigateToArrivals }) {
 
       {/* 3. ЖУРНАЛ ДВИЖЕНИЙ ПО СКЛАДУ */}
       {viewMode === 'movements' && (
-        <Card className="border-border">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm font-semibold">Журнал движений</CardTitle>
+        <Card className="border-hairline rounded-lg">
+          <CardHeader className="p-4 pb-2 border-b border-hairline bg-surface">
+            <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Журнал движений</CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4 pt-0">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-3">Дата</th>
                     <th className="py-2.5 px-3">Тип</th>
                     <th className="py-2.5 px-3">Товар</th>
@@ -647,24 +653,24 @@ export function WarehousePage({ onNavigateToArrivals }) {
                     <th className="py-2.5 px-3">Примечание</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-hairline-soft">
                   {movements.map((m) => (
-                    <tr key={m.id} className="hover:bg-muted/50">
-                      <td className="py-2 px-3 text-muted-foreground">{formatDate(m.date)}</td>
-                      <td className="py-2 px-3">
+                    <tr key={m.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-3 text-steel">{formatDate(m.date)}</td>
+                      <td className="py-2.5 px-3">
                         {m.movement_type === 'in' ? (
-                          <Badge variant="outline">Приход</Badge>
+                          <Badge variant="mint">Приход</Badge>
                         ) : (
-                          <Badge variant="secondary">Списание</Badge>
+                          <Badge variant="peach">Списание</Badge>
                         )}
                       </td>
-                      <td className="py-2 px-3 font-medium">{m.product_name}</td>
-                      <td className="py-2 px-3 text-right font-bold">
+                      <td className="py-2.5 px-3 font-medium text-foreground">{m.product_name}</td>
+                      <td className="py-2.5 px-3 text-right font-semibold">
                         {m.movement_type === 'in' ? '+' : '-'}{formatNumber(m.quantity)} {m.unit}
                       </td>
-                      <td className="py-2 px-3 text-right">{formatCurrency(m.total_price)}</td>
-                      <td className="py-2 px-3 font-mono">{m.vehicle_number || '—'}</td>
-                      <td className="py-2 px-3 text-muted-foreground">{m.comment || '—'}</td>
+                      <td className="py-2.5 px-3 text-right text-steel">{formatCurrency(m.total_price)}</td>
+                      <td className="py-2.5 px-3 font-mono text-steel">{m.vehicle_number || '—'}</td>
+                      <td className="py-2.5 px-3 text-steel">{m.comment || '—'}</td>
                     </tr>
                   ))}
                 </tbody>

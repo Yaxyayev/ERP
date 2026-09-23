@@ -3,19 +3,42 @@ import { cn } from '../../lib/utils';
 
 export function Badge({ className, variant = 'default', ...props }) {
   const variants = {
-    default: 'bg-primary/10 text-primary border-primary/20',
-    secondary: 'bg-secondary text-secondary-foreground border-transparent',
-    success: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
-    warning: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
-    destructive: 'bg-destructive/15 text-destructive border-destructive/30',
-    outline: 'text-foreground border-border'
+    // Standard Notion Tags
+    default: 'bg-surface text-foreground border border-hairline',
+    outline: 'bg-transparent text-foreground border border-hairline',
+    
+    // Notion Database Property Select Pills
+    mint: 'notion-tag-mint border-transparent',
+    green: 'notion-tag-mint border-transparent',
+    success: 'notion-tag-mint border-transparent',
+
+    peach: 'notion-tag-peach border-transparent',
+    orange: 'notion-tag-peach border-transparent',
+    warning: 'notion-tag-peach border-transparent',
+
+    rose: 'notion-tag-rose border-transparent',
+    red: 'notion-tag-rose border-transparent',
+    destructive: 'notion-tag-rose border-transparent',
+
+    lavender: 'notion-tag-lavender border-transparent',
+    purple: 'notion-tag-lavender border-transparent',
+
+    sky: 'notion-tag-sky border-transparent',
+    blue: 'notion-tag-sky border-transparent',
+
+    yellow: 'notion-tag-yellow border-transparent',
+    gray: 'notion-tag-gray border-transparent',
+
+    // Signature Notion Purple Pill
+    'notion-purple': 'bg-[#5645d4] text-white border-transparent font-medium',
+    primary: 'bg-[#5645d4] text-white border-transparent font-medium'
   };
 
   return (
-    <div
+    <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring',
-        variants[variant],
+        'inline-flex items-center gap-1 rounded-[4px] px-2 py-0.5 text-[11px] font-medium transition-colors select-none',
+        variants[variant] || variants.default,
         className
       )}
       {...props}

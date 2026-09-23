@@ -639,28 +639,34 @@ export function FinancePage() {
         </Card>
       </div>
 
-      {/* Tabs */}
-      <div className="inline-flex items-center rounded-lg border border-border bg-muted p-1 text-muted-foreground text-xs no-print">
+      {/* Tabs (Notion pill-tabs) */}
+      <div className="inline-flex items-center gap-1.5 no-print">
         <button
           onClick={() => setActiveTab('transactions')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'transactions' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'transactions'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Операции ({transactions.length})
         </button>
         <button
           onClick={() => setActiveTab('debts')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'debts' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'debts'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Долги клиентов ({debts.length})
         </button>
         <button
           onClick={() => setActiveTab('broker')}
-          className={`rounded-md px-3 py-1 font-medium transition-all ${
-            activeTab === 'broker' ? 'bg-background text-foreground shadow-sm font-semibold' : 'hover:text-foreground'
+          className={`h-7 px-3 rounded-full text-xs font-medium border transition-all ${
+            activeTab === 'broker'
+              ? 'bg-[#1a1a1a] dark:bg-[#e3e2de] text-white dark:text-[#1a1a1a] border-transparent'
+              : 'bg-transparent text-steel border-hairline hover:text-foreground'
           }`}
         >
           Брокерский счет
@@ -674,17 +680,17 @@ export function FinancePage() {
         </div>
       )}
 
-      {/* 1. ЖУРНАЛ КАССЫ */}
+      {/* 1. ЖУРНАЛ КАССЫ (Notion Database Table) */}
       {activeTab === 'transactions' && (
-        <Card className="border-border">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm font-semibold">Журнал операций</CardTitle>
+        <Card className="border-hairline rounded-lg">
+          <CardHeader className="p-4 pb-2 border-b border-hairline bg-surface">
+            <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Журнал операций</CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4 pt-0">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-3">Дата</th>
                     <th className="py-2.5 px-2">Тип</th>
                     <th className="py-2.5 px-2">Статья</th>
@@ -694,15 +700,15 @@ export function FinancePage() {
                     <th className="py-2.5 px-3">Инфо</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-hairline-soft">
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="py-2 px-3 text-muted-foreground">{formatDate(tx.date)}</td>
-                      <td className="py-2 px-2">
+                    <tr key={tx.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-3 text-steel">{formatDate(tx.date)}</td>
+                      <td className="py-2.5 px-2">
                         {tx.transaction_type === 'income' ? (
-                          <Badge variant="outline">Приход</Badge>
+                          <Badge variant="mint">Приход</Badge>
                         ) : (
-                          <Badge variant="secondary">Расход</Badge>
+                          <Badge variant="rose">Расход</Badge>
                         )}
                       </td>
                       <td className="py-2 px-2 font-medium">
@@ -716,22 +722,22 @@ export function FinancePage() {
                          tx.category === 'factory_payment' ? 'Оплата заводу' :
                          tx.category === 'broker_deposit' ? 'Депозит биржи' : tx.category}
                       </td>
-                      <td className="py-2 px-3">
+                      <td className="py-2.5 px-3">
                         {tx.client_name ? (
-                          <span className="font-semibold text-foreground">{tx.client_name}</span>
+                          <span className="font-semibold text-charcoal dark:text-foreground">{tx.client_name}</span>
                         ) : tx.factory_name ? (
-                          <span>{tx.factory_name}</span>
+                          <span className="text-foreground">{tx.factory_name}</span>
                         ) : tx.vehicle_plate || tx.vehicle_number ? (
-                          <span className="font-mono">{tx.vehicle_plate || tx.vehicle_number}</span>
+                          <span className="font-mono text-steel">{tx.vehicle_plate || tx.vehicle_number}</span>
                         ) : '—'}
                       </td>
-                      <td className="py-2 px-2 text-muted-foreground">
+                      <td className="py-2.5 px-2 text-steel">
                         {tx.payment_method === 'cash' ? 'Наличные' : tx.payment_method === 'transfer' ? 'Перечисление' : 'Карта'}
                       </td>
-                      <td className={`py-2 px-3 text-right font-medium ${tx.transaction_type === 'income' ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
+                      <td className={`py-2.5 px-3 text-right font-medium ${tx.transaction_type === 'income' ? 'text-brand-green font-semibold' : 'text-steel'}`}>
                         {tx.transaction_type === 'income' ? '+' : '-'}{formatCurrency(tx.amount_uzs)}
                       </td>
-                      <td className="py-2 px-3 text-muted-foreground truncate max-w-[140px]">{tx.comment || '—'}</td>
+                      <td className="py-2.5 px-3 text-steel text-[11px] truncate max-w-[140px]">{tx.comment || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -782,35 +788,35 @@ export function FinancePage() {
             </Card>
           )}
 
-          {/* Таблица должников */}
-          <Card className="border-border">
-            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-semibold">Список должников</CardTitle>
-              <Badge variant="destructive">Общий долг: {formatCurrency(totalDebt)}</Badge>
+          {/* Таблица должников (Notion Database Table) */}
+          <Card className="border-hairline rounded-lg">
+            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
+              <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Список должников</CardTitle>
+              <Badge variant="rose">Общий долг: {formatCurrency(totalDebt)}</Badge>
             </CardHeader>
-            <CardContent className="p-0 sm:p-4 pt-0">
+            <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-border text-muted-foreground font-medium">
-                      <th className="py-2 px-3">Клиент</th>
-                      <th className="py-2 px-2">Телефон</th>
-                      <th className="py-2 px-2 text-center">Сделок</th>
-                      <th className="py-2 px-2">Посл. отгрузка</th>
-                      <th className="py-2 px-3 text-right">Сумма долга</th>
-                      <th className="py-2 px-3 text-center no-print">Действие</th>
+                    <tr className="border-b border-hairline bg-surface text-steel font-medium">
+                      <th className="py-2.5 px-3">Клиент</th>
+                      <th className="py-2.5 px-2">Телефон</th>
+                      <th className="py-2.5 px-2 text-center">Сделок</th>
+                      <th className="py-2.5 px-2">Посл. отгрузка</th>
+                      <th className="py-2.5 px-3 text-right">Сумма долга</th>
+                      <th className="py-2.5 px-3 text-center no-print">Действие</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-hairline-soft">
                     {debts.map((client) => (
-                      <tr key={client.id} className="hover:bg-muted/50 transition-colors">
-                        <td className="py-2.5 px-3 font-semibold text-foreground">
+                      <tr key={client.id} className="hover:bg-surface/60 transition-colors">
+                        <td className="py-2.5 px-3 font-semibold text-charcoal dark:text-foreground">
                           {client.name}
-                          {client.company_name && <span className="block text-[10px] text-muted-foreground font-normal">{client.company_name}</span>}
+                          {client.company_name && <span className="block text-[10px] text-steel font-normal">{client.company_name}</span>}
                         </td>
-                        <td className="py-2.5 px-2 text-muted-foreground">{client.phone || '—'}</td>
+                        <td className="py-2.5 px-2 text-steel">{client.phone || '—'}</td>
                         <td className="py-2.5 px-2 text-center font-medium">{client.unpaid_sales_count}</td>
-                        <td className="py-2.5 px-2 text-muted-foreground">{formatDate(client.last_sale_date) || '—'}</td>
+                        <td className="py-2.5 px-2 text-steel">{formatDate(client.last_sale_date) || '—'}</td>
                         <td className="py-2.5 px-3 text-right font-semibold text-destructive">
                           {formatCurrency(client.debt_amount)}
                         </td>
@@ -830,7 +836,7 @@ export function FinancePage() {
                     ))}
                     {debts.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="py-6 text-center text-xs text-muted-foreground">Долгов нет</td>
+                        <td colSpan={6} className="py-6 text-center text-xs text-steel">Долгов нет</td>
                       </tr>
                     )}
                   </tbody>
@@ -841,18 +847,18 @@ export function FinancePage() {
         </div>
       )}
 
-      {/* 3. БРОКЕРСКИЙ СЧЕТ */}
+      {/* 3. БРОКЕРСКИЙ СЧЕТ (Notion Database Table) */}
       {activeTab === 'broker' && (
-        <Card className="border-border">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-semibold">Брокерский счет и депозиты</CardTitle>
+        <Card className="border-hairline rounded-lg">
+          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
+            <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Брокерский счет и депозиты</CardTitle>
             <Badge variant="outline">Баланс: {formatCurrency(brokerData?.balance || 0)}</Badge>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted-foreground font-medium">
+                  <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-3">Дата</th>
                     <th className="py-2.5 px-3">Тип</th>
                     <th className="py-2.5 px-3">Тикет / Завод</th>
@@ -860,22 +866,22 @@ export function FinancePage() {
                     <th className="py-2.5 px-4">Примечание</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-hairline-soft">
                   {brokerData?.history?.map((b) => (
-                    <tr key={b.id} className="hover:bg-muted/50">
-                      <td className="py-2.5 px-3 text-muted-foreground">{formatDate(b.date)}</td>
+                    <tr key={b.id} className="hover:bg-surface/60 transition-colors">
+                      <td className="py-2.5 px-3 text-steel">{formatDate(b.date)}</td>
                       <td className="py-2.5 px-3">
-                        {b.type === 'deposit' && <Badge variant="outline">Пополнение</Badge>}
-                        {b.type === 'ticket_return' && <Badge variant="secondary">Возврат остатка тикета</Badge>}
-                        {b.type === 'ticket_allocation' && <Badge variant="destructive">Списание на квоту</Badge>}
+                        {b.type === 'deposit' && <Badge variant="mint">Пополнение</Badge>}
+                        {b.type === 'ticket_return' && <Badge variant="lavender">Возврат остатка</Badge>}
+                        {b.type === 'ticket_allocation' && <Badge variant="rose">Списание на квоту</Badge>}
                       </td>
-                      <td className="py-2.5 px-3 font-medium">
+                      <td className="py-2.5 px-3 font-medium text-foreground">
                         {b.ticket_number ? `Тикет ${b.ticket_number} (${b.factory_name || ''})` : '—'}
                       </td>
-                      <td className="py-2.5 px-4 text-right font-bold text-foreground">
+                      <td className="py-2.5 px-4 text-right font-semibold text-foreground">
                         {formatCurrency(b.amount)}
                       </td>
-                      <td className="py-2.5 px-4 text-muted-foreground">{b.comment || '—'}</td>
+                      <td className="py-2.5 px-4 text-steel">{b.comment || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
