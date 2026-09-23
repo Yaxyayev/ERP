@@ -538,24 +538,28 @@ export function FinancePage() {
           value={`+${formatCurrency(summary?.totalIncome || 0)}`}
           subtitle="Оплаты за цемент и доставку"
           icon={Wallet}
+          iconBg="bg-tint-mint text-emerald-600 border-emerald-200/60 dark:border-emerald-800/40"
         />
         <StatCard
           title="Расходы"
           value={`-${formatCurrency(summary?.totalExpense || 0)}`}
           subtitle="Заводы, топливо, запчасти, зп"
           icon={Wallet}
+          iconBg="bg-tint-rose text-rose-600 border-rose-200/60 dark:border-rose-800/40"
         />
         <StatCard
           title="Остаток в кассе"
           value={formatCurrency(summary?.netCash || 0)}
           subtitle="Фактический баланс"
           icon={DollarSign}
+          iconBg="bg-tint-lavender text-primary border-purple-200/60 dark:border-purple-800/40"
         />
         <StatCard
           title="Брокерский счет"
           value={formatCurrency(summary?.brokerBalance || brokerData?.balance || 0)}
           subtitle="Депозит на бирже"
           icon={Landmark}
+          iconBg="bg-tint-sky text-sky-600 border-sky-200/60 dark:border-sky-800/40"
         />
       </div>
 
