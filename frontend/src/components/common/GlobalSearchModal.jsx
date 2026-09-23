@@ -112,34 +112,36 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 pt-16 sm:pt-20">
-      {/* Backdrop */}
+      {/* Notion Frosted Glass Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity animate-in fade-in duration-150"
+        className="fixed inset-0 notion-modal-backdrop transition-opacity cursor-pointer"
         onClick={onClose}
       />
 
-      {/* Search Palette Container (Notion Style) */}
-      <div className="relative w-full max-w-2xl rounded-lg bg-canvas border border-hairline shadow-notion-modal text-foreground overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150 z-10">
+      {/* Search Palette Container (Notion Glass & Spring Animation) */}
+      <div className="relative w-full max-w-2xl rounded-xl notion-modal-glass text-charcoal dark:text-foreground overflow-hidden flex flex-col max-h-[80vh] z-10">
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-hairline bg-surface">
-          <Search className="h-4 w-4 text-primary shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-hairline/80 bg-white/40 dark:bg-white/5 backdrop-blur-sm">
+          <div className="h-6 w-6 rounded-full bg-tint-lavender flex items-center justify-center text-primary shrink-0">
+            <Search className="h-3.5 w-3.5" />
+          </div>
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Поиск по системе: клиенты, товары, машины, накладные, разделы..."
-            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-steel focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-charcoal dark:text-foreground placeholder:text-steel focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="p-1 rounded-md text-steel hover:text-foreground hover:bg-hairline/60 transition-colors"
+              className="p-1 rounded-full text-steel hover:text-foreground hover:bg-hairline/60 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex text-[11px] bg-canvas text-steel border border-hairline px-1.5 py-0.5 rounded font-mono shadow-2xs">
+          <kbd className="hidden sm:inline-flex text-[11px] bg-surface text-steel border border-hairline px-1.5 py-0.5 rounded font-mono shadow-2xs">
             ESC
           </kbd>
         </div>
@@ -162,7 +164,7 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
                       className="w-full flex items-center justify-between p-2 rounded-md hover:bg-surface text-left transition-colors group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="h-7 w-7 rounded-md bg-tint-lavender text-primary flex items-center justify-center shrink-0">
+                        <div className="h-7 w-7 rounded-full bg-tint-lavender text-primary flex items-center justify-center shrink-0">
                           <Icon className="h-4 w-4" />
                         </div>
                         <div>
@@ -193,7 +195,7 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
                     className="w-full flex items-center justify-between p-2 rounded-md hover:bg-surface text-left transition-colors group"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="h-6 w-6 rounded-md bg-tint-mint text-brand-green flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="h-7 w-7 rounded-full bg-tint-mint text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
                         К
                       </div>
                       <div>
@@ -230,7 +232,7 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
                     className="w-full flex items-center justify-between p-2 rounded-md hover:bg-surface text-left transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="h-6 w-6 rounded-md bg-tint-peach text-brand-orange flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="h-7 w-7 rounded-full bg-tint-peach text-brand-orange flex items-center justify-center font-bold text-xs shrink-0">
                         Ц
                       </div>
                       <div>
@@ -265,7 +267,7 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
                     className="w-full flex items-center justify-between p-2 rounded-md hover:bg-surface text-left transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="h-6 w-6 rounded-md bg-tint-sky text-link-blue flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="h-7 w-7 rounded-full bg-tint-sky text-sky-600 dark:text-sky-300 flex items-center justify-center font-bold text-xs shrink-0">
                         <Truck className="h-3.5 w-3.5" />
                       </div>
                       <div>
@@ -297,7 +299,7 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
                     className="w-full flex items-center justify-between p-2 rounded-md hover:bg-surface text-left transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="h-6 w-6 rounded-md bg-tint-lavender text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="h-7 w-7 rounded-full bg-tint-lavender text-primary flex items-center justify-center font-bold text-xs shrink-0">
                         #{s.id}
                       </div>
                       <div>

@@ -127,29 +127,33 @@ export function Header({ theme, toggleTheme, onOpenMobileMenu, isSidebarHidden, 
             size="icon"
             onClick={toggleTheme}
             id="theme-toggle-btn"
-            className="h-[30px] w-[30px]"
+            className="h-[30px] w-[30px] rounded-full"
             title={theme === 'dark' ? 'Включить светлую тему' : 'Включить темную тему'}
           >
             {theme === 'dark' ? (
-              <Sun className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+              <Sun className="h-3.5 w-3.5 text-steel hover:text-foreground" />
             ) : (
-              <Moon className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+              <Moon className="h-3.5 w-3.5 text-steel hover:text-foreground" />
             )}
           </Button>
 
           {/* User profile & Logout */}
           {user && (
             <div className="flex items-center gap-2 pl-2 border-l border-hairline">
-              <div className="hidden sm:block text-right">
-                <p className="text-xs font-semibold text-foreground leading-none">{user.fullName}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{user.roleTitle}</p>
+              <div className="w-7 h-7 rounded-full bg-tint-lavender text-primary font-bold text-xs flex items-center justify-center shrink-0 border border-hairline shadow-2xs">
+                {user.fullName?.charAt(0) || user.username?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+
+              <div className="hidden sm:block text-left">
+                <p className="text-xs font-semibold text-charcoal dark:text-foreground leading-none">{user.fullName || user.username}</p>
+                <p className="text-[10px] text-steel mt-0.5">{user.roleTitle || 'Пользователь'}</p>
               </div>
 
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={logout}
-                className="h-[30px] w-[30px] text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                className="h-[30px] w-[30px] rounded-full text-steel hover:text-destructive hover:bg-destructive/10"
                 title="Выйти из системы"
               >
                 <LogOut className="h-3.5 w-3.5" />

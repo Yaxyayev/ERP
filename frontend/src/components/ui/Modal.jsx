@@ -21,30 +21,30 @@ export function Modal({ isOpen, onClose, title, description, children, maxWidth 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop */}
+      {/* Notion Frosted Glass Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity animate-in fade-in"
+        className="fixed inset-0 notion-modal-backdrop transition-opacity cursor-pointer"
         onClick={onClose}
       />
 
-      {/* Notion Dialog Container */}
+      {/* Notion Glass Dialog Container with Spring Animation */}
       <div
         className={cn(
-          'relative w-full rounded-lg bg-card border border-hairline text-card-foreground shadow-notion-modal transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col',
+          'relative w-full rounded-xl notion-modal-glass text-charcoal dark:text-foreground my-8 max-h-[90vh] flex flex-col z-10 overflow-hidden',
           maxWidth
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-hairline px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-hairline/80 px-5 py-3.5 bg-white/40 dark:bg-white/5 backdrop-blur-sm">
           <div>
-            {title && <h2 className="text-sm sm:text-base font-semibold tracking-tight text-foreground">{title}</h2>}
+            {title && <h2 className="text-sm sm:text-base font-semibold tracking-tight text-charcoal dark:text-foreground">{title}</h2>}
             {description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+              <p className="text-xs text-steel mt-0.5">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-muted-foreground hover:bg-surface hover:text-foreground transition-colors"
+            className="rounded-full p-1.5 text-steel hover:bg-surface hover:text-charcoal dark:hover:text-foreground transition-colors shrink-0"
           >
             <X className="h-4 w-4" />
           </button>

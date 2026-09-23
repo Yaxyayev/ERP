@@ -30,20 +30,20 @@ export function ChartDrilldownModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop */}
+      {/* Notion Frosted Glass Backdrop */}
       <div
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity animate-in fade-in"
+        className="fixed inset-0 notion-modal-backdrop transition-opacity cursor-pointer"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
-      <div className="relative w-full max-w-4xl rounded-lg bg-canvas border border-hairline text-foreground shadow-notion-modal transition-all animate-in zoom-in-95 my-8 max-h-[90vh] flex flex-col z-10">
+      {/* Notion Glass Dialog Container with Spring Animation */}
+      <div className="relative w-full max-w-4xl rounded-xl notion-modal-glass text-charcoal dark:text-foreground my-8 max-h-[90vh] flex flex-col z-10 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-hairline px-6 py-4 bg-surface">
+        <div className="flex items-center justify-between border-b border-hairline/80 px-6 py-4 bg-white/40 dark:bg-white/5 backdrop-blur-sm">
           <div>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary" />
-              <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">{title}</h2>
+              <h2 className="text-base sm:text-lg font-semibold tracking-tight text-charcoal dark:text-foreground">{title}</h2>
             </div>
             {subtitle && (
               <p className="text-xs text-steel mt-0.5">{subtitle}</p>
@@ -58,7 +58,7 @@ export function ChartDrilldownModal({
             )}
             <button
               onClick={onClose}
-              className="rounded-md p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors"
+              className="rounded-full p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors shrink-0"
             >
               <X className="h-4 w-4" />
             </button>

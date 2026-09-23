@@ -653,7 +653,7 @@ export function DashboardPage({ onNavigate }) {
             value={formatCurrency(summary?.turnover?.total || 0)}
             subtitle={`Цемент: ${formatCurrency(summary?.turnover?.cement || 0)}`}
             icon={TrendingUp}
-            iconBg="bg-emerald-500/15 text-emerald-500 group-hover:scale-105 transition-transform"
+            iconBg="bg-tint-mint text-emerald-600 dark:text-emerald-300 border-emerald-500/30"
           />
         </div>
 
@@ -663,7 +663,7 @@ export function DashboardPage({ onNavigate }) {
             value={formatCurrency(summary?.profit?.total || 0)}
             subtitle={`Маржинальность: ${summary?.profit?.marginPercent || 0}%`}
             icon={DollarSign}
-            iconBg="bg-teal-500/15 text-teal-500 group-hover:scale-105 transition-transform"
+            iconBg="bg-tint-lavender text-primary border-primary/30"
           />
         </div>
 
@@ -677,7 +677,7 @@ export function DashboardPage({ onNavigate }) {
             value={formatCurrency(summary?.debts?.totalDebt || 0)}
             subtitle={`${summary?.debts?.debtorsCount || 0} контрагентов в долгу`}
             icon={AlertTriangle}
-            iconBg="bg-rose-500/15 text-rose-500 group-hover:scale-105 transition-transform"
+            iconBg="bg-tint-rose text-destructive border-destructive/30"
           />
         </div>
 
@@ -691,7 +691,7 @@ export function DashboardPage({ onNavigate }) {
             value={`${formatNumber(summary?.turnover?.totalTonnage || 0)} т`}
             subtitle="Реализованный объем"
             icon={Layers}
-            iconBg="bg-amber-500/15 text-amber-500 group-hover:scale-105 transition-transform"
+            iconBg="bg-tint-peach text-brand-orange border-orange-500/30"
           />
         </div>
       </div>

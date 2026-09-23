@@ -76,19 +76,19 @@ export function ChartMaximizeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto antialiased">
-      {/* Backdrop */}
+      {/* Notion Frosted Glass Backdrop */}
       <div
-        className="fixed inset-0 bg-background/80 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 notion-modal-backdrop transition-opacity cursor-pointer"
         onClick={onClose}
       />
 
-      {/* Modal Dialog Card (Notion Style) */}
-      <div className="relative w-full max-w-6xl rounded-lg bg-canvas border border-hairline text-foreground shadow-notion-modal transition-all animate-in zoom-in-95 duration-200 my-auto max-h-[92vh] flex flex-col z-10 overflow-hidden">
+      {/* Modal Dialog Card (Notion Glass & Spring Animation) */}
+      <div className="relative w-full max-w-6xl rounded-xl notion-modal-glass text-charcoal dark:text-foreground my-auto max-h-[92vh] flex flex-col z-10 overflow-hidden">
         
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-hairline px-5 py-3.5 bg-surface gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-hairline/80 px-5 py-3.5 bg-white/40 dark:bg-white/5 backdrop-blur-sm gap-3">
           <div className="flex items-start gap-3">
-            <div className="h-8 w-8 rounded-md bg-tint-lavender text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <div className="h-8 w-8 rounded-full bg-tint-lavender text-primary flex items-center justify-center shrink-0 mt-0.5">
               <BarChart3 className="h-4 w-4" />
             </div>
             <div>
@@ -159,7 +159,7 @@ export function ChartMaximizeModal({
 
             <button
               onClick={onClose}
-              className="rounded-md p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors border border-hairline"
+              className="rounded-full p-1.5 text-steel hover:bg-surface hover:text-foreground transition-colors border border-hairline shrink-0"
               title="Закрыть (Esc)"
             >
               <X className="h-4 w-4" />

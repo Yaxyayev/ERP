@@ -99,15 +99,15 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
         <div className={cn('flex items-center justify-between px-1.5 py-1', isCollapsed && 'justify-center px-0')}>
           {!isCollapsed ? (
             <div className="flex items-center gap-2 truncate">
-              <div className="w-5 h-5 rounded-[4px] bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-[10px] shrink-0">
+              <div className="w-6 h-6 rounded-full bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
                 N
               </div>
-              <span className="font-semibold text-xs tracking-tight text-foreground truncate">
+              <span className="font-semibold text-xs tracking-tight text-charcoal dark:text-foreground truncate">
                 ERP Цемент
               </span>
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-[4px] bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#1a1a1a] dark:bg-white text-white dark:text-[#1a1a1a] flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
               N
             </div>
           )}
@@ -115,7 +115,7 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
           <div className="flex items-center gap-0.5">
             <button
               onClick={onToggleCollapse}
-              className="p-1 rounded-md text-muted-foreground hover:bg-[#eae8e5] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
+              className="p-1.5 rounded-full text-steel hover:bg-[#efedea] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
               title={isCollapsed ? 'Развернуть меню' : 'Свернуть меню'}
             >
               {isCollapsed ? <PanelLeft className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
@@ -123,7 +123,7 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
             {!isCollapsed && onHideSidebar && (
               <button
                 onClick={onHideSidebar}
-                className="p-1 rounded-md text-muted-foreground hover:bg-[#eae8e5] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
+                className="p-1.5 rounded-full text-steel hover:bg-[#efedea] dark:hover:bg-[#2d2d2d] hover:text-foreground transition-colors"
                 title="Спрятать меню (⌘B)"
               >
                 <ChevronRight className="h-3.5 w-3.5 rotate-180" />
@@ -151,14 +151,21 @@ export function Sidebar({ activeTab, onSelectTab, isHidden, isCollapsed, onToggl
                     id={`nav-${item.id}`}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
-                      'w-full flex items-center rounded-md transition-colors duration-100 cursor-pointer',
-                      isCollapsed ? 'justify-center p-2' : 'gap-2 px-2 py-1.5 text-xs',
+                      'w-full flex items-center rounded-md transition-all duration-150 cursor-pointer group',
+                      isCollapsed ? 'justify-center p-1.5' : 'gap-2 px-2 py-1 text-xs',
                       isActive
-                        ? 'bg-[#eae8e5] dark:bg-[#2d2d2d] text-foreground font-semibold'
-                        : 'text-foreground/80 hover:bg-[#eae8e5]/60 dark:hover:bg-[#2d2d2d]/60 hover:text-foreground font-normal'
+                        ? 'bg-[#ede9e3] dark:bg-[#2d2d2c] text-charcoal dark:text-foreground font-semibold shadow-2xs'
+                        : 'text-charcoal/80 dark:text-foreground/80 hover:bg-[#efedea]/70 dark:hover:bg-[#2d2d2c]/60 hover:text-foreground font-normal'
                     )}
                   >
-                    <Icon className={cn('h-3.5 w-3.5 shrink-0', isActive ? 'text-[#5645d4]' : 'text-muted-foreground')} />
+                    <div className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors",
+                      isActive
+                        ? "bg-tint-lavender text-primary"
+                        : "text-steel group-hover:text-charcoal dark:group-hover:text-foreground group-hover:bg-white/60 dark:group-hover:bg-white/10"
+                    )}>
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
                     {!isCollapsed && (
                       <span className="truncate">{item.label}</span>
                     )}

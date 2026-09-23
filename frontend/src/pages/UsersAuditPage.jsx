@@ -553,7 +553,7 @@ export default function UsersAuditPage({ currentUser }) {
                 <p className="text-[11px] font-medium text-steel">Событий за сегодня</p>
                 <p className="text-xl font-bold text-charcoal dark:text-foreground mt-0.5">{auditStats.total_today || 0}</p>
               </div>
-              <div className="w-8 h-8 rounded-md bg-tint-lavender flex items-center justify-center text-primary">
+              <div className="w-8 h-8 rounded-full bg-tint-lavender flex items-center justify-center text-primary shrink-0 shadow-2xs">
                 <Activity className="w-4 h-4" />
               </div>
             </Card>
@@ -563,7 +563,7 @@ export default function UsersAuditPage({ currentUser }) {
                 <p className="text-[11px] font-medium text-steel">Входов в систему</p>
                 <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{auditStats.logins_today || 0}</p>
               </div>
-              <div className="w-8 h-8 rounded-md bg-tint-mint flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <div className="w-8 h-8 rounded-full bg-tint-mint flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
                 <LogIn className="w-4 h-4" />
               </div>
             </Card>
@@ -573,7 +573,7 @@ export default function UsersAuditPage({ currentUser }) {
                 <p className="text-[11px] font-medium text-steel">Склад и Продажи</p>
                 <p className="text-xl font-bold text-charcoal dark:text-foreground mt-0.5">{auditStats.operations_today || 0}</p>
               </div>
-              <div className="w-8 h-8 rounded-md bg-tint-sky flex items-center justify-center text-sky-600 dark:text-sky-400">
+              <div className="w-8 h-8 rounded-full bg-tint-sky flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0 shadow-2xs">
                 <ShoppingBag className="w-4 h-4" />
               </div>
             </Card>
@@ -583,7 +583,7 @@ export default function UsersAuditPage({ currentUser }) {
                 <p className="text-[11px] font-medium text-steel">Предупреждений / Сбоев</p>
                 <p className="text-xl font-bold text-destructive mt-0.5">{auditStats.security_alerts || 0}</p>
               </div>
-              <div className="w-8 h-8 rounded-md bg-tint-rose flex items-center justify-center text-destructive">
+              <div className="w-8 h-8 rounded-full bg-tint-rose flex items-center justify-center text-destructive shrink-0 shadow-2xs">
                 <AlertTriangle className="w-4 h-4" />
               </div>
             </Card>

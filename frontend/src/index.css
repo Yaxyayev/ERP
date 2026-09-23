@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    /* Notion Light Canvas & Palette */
-    --background: #ffffff;
+    /* Notion Signature Creamy Canvas & Warm Palette */
+    --background: #fbfbfa;
     --foreground: #37352f;
 
     --card: #ffffff;
@@ -14,36 +14,38 @@
     --popover: #ffffff;
     --popover-foreground: #37352f;
 
-    --surface: #f6f5f4;
-    --surface-soft: #fafaf9;
+    --surface: #f7f6f5;
+    --surface-soft: #faf9f7;
+    --surface-hover: #efedea;
 
     --primary: #5645d4;
     --primary-pressed: #4534b3;
     --primary-foreground: #ffffff;
 
-    --secondary: #f6f5f4;
+    --secondary: #f7f6f5;
     --secondary-foreground: #37352f;
 
-    --muted: #f6f5f4;
+    --muted: #f7f6f5;
     --muted-foreground: #787671;
 
-    --accent: #f6f5f4;
+    --accent: #f7f6f5;
     --accent-foreground: #37352f;
 
     --destructive: #e03131;
     --destructive-foreground: #ffffff;
 
-    --border: #e5e3df;
-    --hairline: #e5e3df;
-    --hairline-strong: #c8c4be;
-    --input: #c8c4be;
+    --border: #ede9e3;
+    --hairline: #ede9e3;
+    --hairline-soft: #f4f1ea;
+    --hairline-strong: #d8d3c9;
+    --input: #d8d3c9;
     --ring: #5645d4;
 
     --radius: 8px;
   }
 
   .dark {
-    /* Notion Dark Canvas & Palette */
+    /* Notion Dark Warm Palette */
     --background: #191919;
     --foreground: #e3e2de;
 
@@ -53,29 +55,31 @@
     --popover: #202020;
     --popover-foreground: #e3e2de;
 
-    --surface: #202020;
-    --surface-soft: #252525;
+    --surface: #242423;
+    --surface-soft: #282827;
+    --surface-hover: #2f2f2e;
 
     --primary: #5645d4;
     --primary-pressed: #4534b3;
     --primary-foreground: #ffffff;
 
-    --secondary: #252525;
+    --secondary: #252524;
     --secondary-foreground: #e3e2de;
 
-    --muted: #252525;
+    --muted: #252524;
     --muted-foreground: #9b9a97;
 
-    --accent: #2a2a2a;
+    --accent: #2c2c2b;
     --accent-foreground: #e3e2de;
 
     --destructive: #eb5757;
     --destructive-foreground: #ffffff;
 
-    --border: #2f2f2f;
-    --hairline: #2f2f2f;
-    --hairline-strong: #373737;
-    --input: #373737;
+    --border: #2e2d2b;
+    --hairline: #2e2d2b;
+    --hairline-soft: #262524;
+    --hairline-strong: #3b3a38;
+    --input: #3b3a38;
     --ring: #6952ec;
 
     --radius: 8px;
@@ -247,4 +251,75 @@ body {
 
 .print-only {
   display: none;
+}
+
+/* Notion Glassmorphism & Spring Animations for Modals */
+@keyframes notionModalOverlayFade {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+@keyframes notionModalSpring {
+  0% {
+    opacity: 0;
+    transform: scale(0.93) translateY(14px);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.008) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.notion-modal-backdrop {
+  animation: notionModalOverlayFade 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: rgba(47, 45, 41, 0.38);
+}
+
+.dark .notion-modal-backdrop {
+  background: rgba(0, 0, 0, 0.68);
+}
+
+.notion-modal-glass {
+  animation: notionModalSpring 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: rgba(251, 251, 250, 0.94);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    0 24px 64px -16px rgba(47, 45, 41, 0.22),
+    0 4px 16px -4px rgba(47, 45, 41, 0.08),
+    0 0 0 1px rgba(237, 233, 227, 0.85);
+}
+
+.dark .notion-modal-glass {
+  background: rgba(28, 28, 27, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 24px 64px -16px rgba(0, 0, 0, 0.6),
+    0 4px 16px -4px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(46, 45, 43, 0.9);
+}
+
+/* Circle rounded icon container */
+.notion-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
 }

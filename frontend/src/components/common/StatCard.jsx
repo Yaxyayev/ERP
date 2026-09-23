@@ -7,6 +7,7 @@ export function StatCard({
   value,
   subtitle,
   icon: Icon,
+  iconBg,
   className,
   onClick
 }) {
@@ -14,21 +15,28 @@ export function StatCard({
     <Card
       onClick={onClick}
       className={cn(
-        'border border-hairline bg-card text-card-foreground shadow-notion-card transition-colors rounded-lg',
+        'border border-hairline bg-card text-card-foreground shadow-notion-card transition-all rounded-lg',
         onClick && 'cursor-pointer hover:border-hairline-strong hover:bg-surface/50',
         className
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3.5 pb-1">
-        <CardTitle className="text-xs font-medium text-muted-foreground">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+        <CardTitle className="text-xs font-medium text-steel">
           {title}
         </CardTitle>
-        {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
+        {Icon && (
+          <div className={cn(
+            "h-8 w-8 rounded-full flex items-center justify-center shrink-0 border transition-transform",
+            iconBg || "bg-surface border-hairline text-steel"
+          )}>
+            <Icon className="h-4 w-4" />
+          </div>
+        )}
       </CardHeader>
-      <CardContent className="p-3.5 pt-0">
-        <div className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">{value}</div>
+      <CardContent className="p-4 pt-0">
+        <div className="text-xl sm:text-2xl font-bold tracking-tight text-charcoal dark:text-foreground">{value}</div>
         {subtitle && (
-          <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">{subtitle}</p>
+          <p className="text-[11px] text-steel mt-0.5 leading-normal">{subtitle}</p>
         )}
       </CardContent>
     </Card>

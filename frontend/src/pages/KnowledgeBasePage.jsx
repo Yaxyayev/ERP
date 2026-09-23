@@ -238,8 +238,10 @@ export default function KnowledgeBasePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-charcoal dark:text-foreground flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
+          <h1 className="text-xl font-bold tracking-tight text-charcoal dark:text-foreground flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-tint-lavender flex items-center justify-center text-primary shrink-0 shadow-2xs">
+              <BookOpen className="h-4 w-4" />
+            </div>
             База знаний и инструкция
           </h1>
           <p className="text-xs text-steel mt-0.5">
