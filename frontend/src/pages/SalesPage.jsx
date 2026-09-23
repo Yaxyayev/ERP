@@ -24,8 +24,10 @@ import {
   PieChart,
   Pie,
   Cell,
-  CartesianGrid
+  CartesianGrid,
+  LabelList
 } from 'recharts';
+import { useChartTheme, NOTION_CHART_PALETTE } from '../lib/chartTheme';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -41,6 +43,7 @@ import { formatCurrency, formatNumber, formatDate } from '../lib/utils';
 import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 
 export function SalesPage() {
+  const chartTheme = useChartTheme();
   const [sales, setSales] = useState([]);
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
@@ -344,17 +347,25 @@ export function SalesPage() {
       ],
       renderChart: () => (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={allClientStats} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} />
+          <BarChart data={allClientStats} margin={{ top: 25, right: 30, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+            <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} />
             <Tooltip
               formatter={(val) => [`${formatNumber(val)} т`, 'Объем']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
-            <Bar dataKey="tonnage" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+            <Bar dataKey="tonnage" radius={[8, 8, 0, 0]}>
+              <LabelList
+                dataKey="tonnage"
+                position="top"
+                formatter={(val) => `${formatNumber(val)} т`}
+                style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }}
+              />
               {allClientStats.map((_, index) => (
-                <Cell key={`cell-max-${index}`} fill={['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899'][index % 6]} />
+                <Cell key={`cell-max-${index}`} fill={NOTION_CHART_PALETTE[index % NOTION_CHART_PALETTE.length]} />
               ))}
             </Bar>
           </BarChart>
@@ -420,7 +431,9 @@ export function SalesPage() {
             </Pie>
             <Tooltip
               formatter={(val, name, props) => [`${val} сделок (${props.payload.name})`, 'Количество']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -540,19 +553,37 @@ export function SalesPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={salesByClientChartData}
-                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    margin={{ top: 25, right: 10, left: -15, bottom: 0 }}
                     onClick={(e) => e && e.activePayload && handleClientBarClick(e.activePayload[0]?.payload)}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 11, fill: chartTheme.textColor }}
+                      axisLine={{ stroke: chartTheme.gridColor }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: chartTheme.textColor }}
+                      tickFormatter={(v) => `${v}т`}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip
                       formatter={(val) => [`${formatNumber(val)} т`, 'Объем']}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                      contentStyle={chartTheme.tooltipStyle}
+                      itemStyle={chartTheme.tooltipItemStyle}
+                      labelStyle={chartTheme.tooltipLabelStyle}
                     />
-                    <Bar dataKey="tonnage" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="tonnage" radius={[4, 4, 0, 0]}>
+                      <LabelList
+                        dataKey="tonnage"
+                        position="top"
+                        formatter={(val) => `${formatNumber(val)} т`}
+                        style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }}
+                      />
                       {salesByClientChartData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899'][index % 6]} />
+                        <Cell key={`cell-${index}`} fill={NOTION_CHART_PALETTE[index % NOTION_CHART_PALETTE.length]} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -602,7 +633,9 @@ export function SalesPage() {
                     </Pie>
                     <Tooltip
                       formatter={(val) => [`${val} сделок`, 'Количество']}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                      contentStyle={chartTheme.tooltipStyle}
+                      itemStyle={chartTheme.tooltipItemStyle}
+                      labelStyle={chartTheme.tooltipLabelStyle}
                     />
                   </PieChart>
                 </ResponsiveContainer>

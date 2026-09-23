@@ -27,8 +27,10 @@ import {
   Cell,
   CartesianGrid,
   AreaChart,
-  Area
+  Area,
+  LabelList
 } from 'recharts';
+import { useChartTheme, NOTION_CHART_PALETTE } from '../lib/chartTheme';
 import { StatCard } from '../components/common/StatCard';
 import { ProcessGraph } from '../components/common/ProcessGraph';
 import { DateRangePicker } from '../components/common/DateRangePicker';
@@ -45,6 +47,7 @@ import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 const CLIENT_COLORS = ['#5645d4', '#1aae39', '#dd5b00', '#0075de', '#7b3ff2', '#2a9d99'];
 
 export function DashboardPage({ onNavigate }) {
+  const chartTheme = useChartTheme();
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [mainView, setMainView] = useState('charts'); // 'charts' | 'process_graph'
   const [summary, setSummary] = useState(null);
@@ -348,16 +351,18 @@ export function DashboardPage({ onNavigate }) {
                 <stop offset="95%" stopColor="#10b981" stopOpacity={0.02}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis yAxisId="amount" orientation="left" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
-            <YAxis yAxisId="tonnage" orientation="right" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis dataKey="date" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+            <YAxis yAxisId="amount" orientation="left" tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
+            <YAxis yAxisId="tonnage" orientation="right" tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} />
             <Tooltip
               formatter={(val, name) => [
                 name === 'total_amount' ? formatCurrency(val) : `${formatNumber(val)} т`,
                 name === 'total_amount' ? 'Выручка' : 'Тоннаж'
               ]}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '13px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
             <Area yAxisId="amount" type="monotone" dataKey="total_amount" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#maxAmount)" name="total_amount" />
             <Area yAxisId="tonnage" type="monotone" dataKey="tonnage" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="5 5" fillOpacity={0} name="tonnage" />
@@ -406,14 +411,17 @@ export function DashboardPage({ onNavigate }) {
             { name: 'Цемент мешки', tonnage: bagTon, fill: '#6366f1' },
             { name: 'Всего цемент', tonnage: totalTon, fill: '#10b981' }
           ]} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+            <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} />
             <Tooltip
               formatter={(val) => [`${formatNumber(val)} тонн`, 'Объем']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
             <Bar dataKey="tonnage" radius={[8, 8, 0, 0]}>
+              <LabelList dataKey="tonnage" position="top" formatter={(val) => `${formatNumber(val)} т`} style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
               <Cell fill="#f97316" />
               <Cell fill="#6366f1" />
               <Cell fill="#10b981" />
@@ -449,13 +457,15 @@ export function DashboardPage({ onNavigate }) {
         ],
         renderChart: () => (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={cementFactoryData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-              <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-              <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} />
+            <BarChart data={cementFactoryData} margin={{ top: 25, right: 30, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+              <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} />
               <Tooltip
                 formatter={(val, name) => [`${formatNumber(val)} т`, name === 'bulk' ? 'Навал' : 'Мешки']}
-                contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+                contentStyle={chartTheme.tooltipStyle}
+                itemStyle={chartTheme.tooltipItemStyle}
+                labelStyle={chartTheme.tooltipLabelStyle}
               />
               <Legend verticalAlign="top" align="right" height={36} formatter={(v) => v === 'bulk' ? 'Навал (Оранжевый)' : 'Мешки (Индиго)'} />
               <Bar dataKey="bulk" name="bulk" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
@@ -494,15 +504,19 @@ export function DashboardPage({ onNavigate }) {
         ],
         renderChart: () => (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={logisticsVehicleData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-              <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-              <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(1)}M`} />
+            <BarChart data={logisticsVehicleData} margin={{ top: 25, right: 30, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+              <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(1)}M`} />
               <Tooltip
                 formatter={(val) => [formatCurrency(val), 'Выручка']}
-                contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+                contentStyle={chartTheme.tooltipStyle}
+                itemStyle={chartTheme.tooltipItemStyle}
+                labelStyle={chartTheme.tooltipLabelStyle}
               />
-              <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+                <LabelList dataKey="revenue" position="top" formatter={(val) => `${(val/1000000).toFixed(1)}M`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         ),
@@ -537,15 +551,18 @@ export function DashboardPage({ onNavigate }) {
       ],
       renderChart: () => (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={topClientsData} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis type="number" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} width={120} />
+          <BarChart data={topClientsData} layout="vertical" margin={{ top: 10, right: 40, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis type="number" tick={{ fontSize: 11, fill: chartTheme.textColor }} />
+            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: chartTheme.dataTextColor }} width={120} />
             <Tooltip
               formatter={(val) => [`${formatNumber(val)} тонн`, 'Объем']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
             <Bar dataKey="tonnage" radius={[0, 8, 8, 0]}>
+              <LabelList dataKey="tonnage" position="right" formatter={(val) => `${formatNumber(val)} т`} style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
               {topClientsData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
@@ -754,16 +771,18 @@ export function DashboardPage({ onNavigate }) {
                           <stop offset="95%" stopColor="#10b981" stopOpacity={0.02}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                      <YAxis yAxisId="amount" orientation="left" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
-                      <YAxis yAxisId="tonnage" orientation="right" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} axisLine={false} tickLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                      <YAxis yAxisId="amount" orientation="left" tick={{ fontSize: 10, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
+                      <YAxis yAxisId="tonnage" orientation="right" tick={{ fontSize: 10, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(val, name) => [
                           name === 'total_amount' ? formatCurrency(val) : `${formatNumber(val)} т`,
                           name === 'total_amount' ? 'Выручка' : 'Тоннаж'
                         ]}
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                        contentStyle={chartTheme.tooltipStyle}
+                        itemStyle={chartTheme.tooltipItemStyle}
+                        labelStyle={chartTheme.tooltipLabelStyle}
                       />
                       <Area
                         yAxisId="amount"
@@ -982,12 +1001,14 @@ export function DashboardPage({ onNavigate }) {
                           margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                           onClick={(e) => e && e.activePayload && handleFactoryClick(e.activePayload[0]?.payload)}
                         >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                          <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
                           <Tooltip
                             formatter={(val, name) => [`${formatNumber(val)} т`, name === 'bulk' ? 'Навал' : 'Мешки']}
-                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                            contentStyle={chartTheme.tooltipStyle}
+                            itemStyle={chartTheme.tooltipItemStyle}
+                            labelStyle={chartTheme.tooltipLabelStyle}
                           />
                           <Legend
                             verticalAlign="top"
@@ -1007,17 +1028,21 @@ export function DashboardPage({ onNavigate }) {
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={logisticsVehicleData}
-                          margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                          margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
                           onClick={(e) => e && e.activePayload && handleVehicleClick(e.activePayload[0]?.payload)}
                         >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                          <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(val) => `${(val / 1000000).toFixed(1)}M`} axisLine={false} tickLine={false} />
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fontSize: 10, fill: chartTheme.textColor }} tickFormatter={(val) => `${(val / 1000000).toFixed(1)}M`} axisLine={false} tickLine={false} />
                           <Tooltip
                             formatter={(val) => [formatCurrency(val), 'Выручка']}
-                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                            contentStyle={chartTheme.tooltipStyle}
+                            itemStyle={chartTheme.tooltipItemStyle}
+                            labelStyle={chartTheme.tooltipLabelStyle}
                           />
-                          <Bar dataKey="revenue" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                          <Bar dataKey="revenue" fill="#3b82f6" radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey="revenue" position="top" formatter={(val) => `${(val/1000000).toFixed(1)}M`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
@@ -1052,17 +1077,20 @@ export function DashboardPage({ onNavigate }) {
                       <BarChart
                         data={topClientsData}
                         layout="vertical"
-                        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                        margin={{ top: 5, right: 35, left: 10, bottom: 5 }}
                         onClick={(e) => e && e.activePayload && handleClientClick(e.activePayload[0]?.payload)}
                       >
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" opacity={0.6} />
-                        <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} width={90} />
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                        <XAxis type="number" tick={{ fontSize: 10, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: chartTheme.dataTextColor }} axisLine={false} tickLine={false} width={90} />
                         <Tooltip
                           formatter={(val) => [`${formatNumber(val)} т`, 'Объем']}
-                          contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                          contentStyle={chartTheme.tooltipStyle}
+                          itemStyle={chartTheme.tooltipItemStyle}
+                          labelStyle={chartTheme.tooltipLabelStyle}
                         />
                         <Bar dataKey="tonnage" radius={[0, 6, 6, 0]}>
+                          <LabelList dataKey="tonnage" position="right" formatter={(val) => `${formatNumber(val)} т`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
                           {topClientsData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.fill} />
                           ))}

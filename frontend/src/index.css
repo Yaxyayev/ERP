@@ -4,92 +4,114 @@
 
 @layer base {
   :root {
-    /* Notion Signature Creamy Canvas & Warm Palette */
-    --background: #fbfbfa;
-    --foreground: #37352f;
+    /* Notion Signature Creamy Canvas & Warm Palette (RGB triplets) */
+    --background: 251 251 250;       /* #fbfbfa Notion paper cream canvas */
+    --foreground: 55 53 47;          /* #37352f Notion charcoal text */
 
-    --card: #ffffff;
-    --card-foreground: #37352f;
+    --card: 255 255 255;            /* #ffffff Notion white card */
+    --card-foreground: 55 53 47;
 
-    --popover: #ffffff;
-    --popover-foreground: #37352f;
+    --popover: 255 255 255;
+    --popover-foreground: 55 53 47;
 
-    --surface: #f7f6f5;
-    --surface-soft: #faf9f7;
-    --surface-hover: #efedea;
+    --surface: 247 246 245;         /* #f7f6f5 Notion warm sidebar/surface */
+    --surface-soft: 250 249 247;    /* #faf9f7 */
+    --surface-hover: 239 237 234;   /* #efedea */
 
-    --primary: #5645d4;
-    --primary-pressed: #4534b3;
-    --primary-foreground: #ffffff;
+    --primary: 86 69 212;           /* #5645d4 Notion purple primary CTA */
+    --primary-pressed: 69 52 179;   /* #4534b3 */
+    --primary-foreground: 255 255 255;
 
-    --secondary: #f7f6f5;
-    --secondary-foreground: #37352f;
+    --secondary: 247 246 245;
+    --secondary-foreground: 55 53 47;
 
-    --muted: #f7f6f5;
-    --muted-foreground: #787671;
+    --muted: 247 246 245;
+    --muted-foreground: 120 118 113; /* #787671 Notion steel secondary text */
 
-    --accent: #f7f6f5;
-    --accent-foreground: #37352f;
+    --accent: 247 246 245;
+    --accent-foreground: 55 53 47;
 
-    --destructive: #e03131;
-    --destructive-foreground: #ffffff;
+    --destructive: 224 49 49;        /* #e03131 */
+    --destructive-foreground: 255 255 255;
 
-    --border: #ede9e3;
-    --hairline: #ede9e3;
-    --hairline-soft: #f4f1ea;
-    --hairline-strong: #d8d3c9;
-    --input: #d8d3c9;
-    --ring: #5645d4;
+    --border: 237 233 227;          /* #ede9e3 Notion warm hairline */
+    --hairline: 237 233 227;
+    --hairline-soft: 244 241 234;   /* #f4f1ea */
+    --hairline-strong: 216 211 201; /* #d8d3c9 */
+    --input: 216 211 201;
+    --ring: 86 69 212;
 
     --radius: 8px;
+
+    /* Hex aliases for SVG/Canvas/Recharts */
+    --chart-text: #787671;
+    --chart-data-text: #37352f;
+    --chart-grid: #ede9e3;
+    --tooltip-bg: #ffffff;
+    --tooltip-border: #ede9e3;
+    --tooltip-text: #37352f;
   }
 
+  html.dark,
   .dark {
-    /* Notion Dark Warm Palette */
-    --background: #191919;
-    --foreground: #e3e2de;
+    /* Notion Dark Warm Palette (RGB triplets) */
+    --background: 25 25 25;         /* #191919 Notion dark warm canvas */
+    --foreground: 227 226 222;      /* #e3e2de Notion dark text */
 
-    --card: #202020;
-    --card-foreground: #e3e2de;
+    --card: 32 32 32;               /* #202020 Notion dark card */
+    --card-foreground: 227 226 222;
 
-    --popover: #202020;
-    --popover-foreground: #e3e2de;
+    --popover: 32 32 32;
+    --popover-foreground: 227 226 222;
 
-    --surface: #242423;
-    --surface-soft: #282827;
-    --surface-hover: #2f2f2e;
+    --surface: 36 36 35;            /* #242423 Notion dark sidebar/surface */
+    --surface-soft: 40 40 39;       /* #282827 */
+    --surface-hover: 47 47 46;      /* #2f2f2e */
 
-    --primary: #5645d4;
-    --primary-pressed: #4534b3;
-    --primary-foreground: #ffffff;
+    --primary: 86 69 212;           /* #5645d4 Notion purple */
+    --primary-pressed: 69 52 179;
+    --primary-foreground: 255 255 255;
 
-    --secondary: #252524;
-    --secondary-foreground: #e3e2de;
+    --secondary: 37 37 36;          /* #252524 */
+    --secondary-foreground: 227 226 222;
 
-    --muted: #252524;
-    --muted-foreground: #9b9a97;
+    --muted: 37 37 36;
+    --muted-foreground: 155 154 151; /* #9b9a97 Notion dark steel */
 
-    --accent: #2c2c2b;
-    --accent-foreground: #e3e2de;
+    --accent: 44 44 43;             /* #2c2c2b */
+    --accent-foreground: 227 226 222;
 
-    --destructive: #eb5757;
-    --destructive-foreground: #ffffff;
+    --destructive: 235 87 87;        /* #eb5757 */
+    --destructive-foreground: 255 255 255;
 
-    --border: #2e2d2b;
-    --hairline: #2e2d2b;
-    --hairline-soft: #262524;
-    --hairline-strong: #3b3a38;
-    --input: #3b3a38;
-    --ring: #6952ec;
+    --border: 46 45 43;             /* #2e2d2b Notion dark border */
+    --hairline: 46 45 43;
+    --hairline-soft: 38 37 36;      /* #262524 */
+    --hairline-strong: 59 58 56;    /* #3b3a38 */
+    --input: 59 58 56;
+    --ring: 105 82 236;
 
     --radius: 8px;
+
+    /* Hex aliases for SVG/Canvas/Recharts */
+    --chart-text: #9b9a97;
+    --chart-data-text: #e3e2de;
+    --chart-grid: #2e2d2b;
+    --tooltip-bg: #242423;
+    --tooltip-border: #3b3a38;
+    --tooltip-text: #e3e2de;
   }
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   font-family: 'Notion Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

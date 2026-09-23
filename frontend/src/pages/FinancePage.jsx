@@ -21,8 +21,10 @@ import {
   PieChart,
   Pie,
   Cell,
-  CartesianGrid
+  CartesianGrid,
+  LabelList
 } from 'recharts';
+import { useChartTheme } from '../lib/chartTheme';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -37,6 +39,7 @@ import { formatCurrency, formatNumber, formatDate } from '../lib/utils';
 import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 
 export function FinancePage() {
+  const chartTheme = useChartTheme();
   const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' | 'debts' | 'broker'
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -316,15 +319,18 @@ export function FinancePage() {
       ],
       renderChart: () => (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={cashFlowBarData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(1)}M`} />
+          <BarChart data={cashFlowBarData} margin={{ top: 25, right: 30, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+            <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(1)}M`} />
             <Tooltip
               formatter={(val) => [formatCurrency(val), 'Сумма']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
             <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
+              <LabelList dataKey="amount" position="top" formatter={(v) => `${(v/1000000).toFixed(1)}M`} style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
               {cashFlowBarData.map((entry, index) => (
                 <Cell key={`cell-max-cf-${index}`} fill={entry.fill} />
               ))}
@@ -384,7 +390,9 @@ export function FinancePage() {
             </Pie>
             <Tooltip
               formatter={(val, name, props) => [formatCurrency(val), props.payload.name]}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -428,15 +436,19 @@ export function FinancePage() {
           <BarChart data={debts.slice(0, 8).map(d => ({
             name: d.name.replace('ООО ', '').replace('ИП ', '').replace(/«|»/g, ''),
             debt: d.debt_amount
-          }))} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis type="number" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
-            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} width={130} />
+          }))} layout="vertical" margin={{ top: 10, right: 40, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis type="number" tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
+            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: chartTheme.dataTextColor }} width={130} />
             <Tooltip
               formatter={(val) => [formatCurrency(val), 'Долг']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
-            <Bar dataKey="debt" fill="#f43f5e" radius={[0, 8, 8, 0]} />
+            <Bar dataKey="debt" fill="#f43f5e" radius={[0, 8, 8, 0]}>
+              <LabelList dataKey="debt" position="right" formatter={(v) => `${(v/1000000).toFixed(1)}M`} style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       ),
@@ -566,15 +578,18 @@ export function FinancePage() {
           <CardContent className="p-4 pt-1">
             <div className="h-48 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={cashFlowBarData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
+                <BarChart data={cashFlowBarData} margin={{ top: 20, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
                   <Tooltip
                     formatter={(val) => [formatCurrency(val), 'Сумма']}
-                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                    contentStyle={chartTheme.tooltipStyle}
+                    itemStyle={chartTheme.tooltipItemStyle}
+                    labelStyle={chartTheme.tooltipLabelStyle}
                   />
                   <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="amount" position="top" formatter={(v) => `${(v/1000000).toFixed(1)}M`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
                     {cashFlowBarData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -619,7 +634,9 @@ export function FinancePage() {
                     </Pie>
                     <Tooltip
                       formatter={(val) => formatCurrency(val)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                      contentStyle={chartTheme.tooltipStyle}
+                      itemStyle={chartTheme.tooltipItemStyle}
+                      labelStyle={chartTheme.tooltipLabelStyle}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -768,15 +785,18 @@ export function FinancePage() {
               <CardContent className="p-4 pt-1">
                 <div className="h-44 w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={topDebtorsChartData} layout="vertical" margin={{ top: 5, right: 25, left: 15, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" opacity={0.6} />
-                      <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} width={100} />
+                    <BarChart data={topDebtorsChartData} layout="vertical" margin={{ top: 5, right: 35, left: 15, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: chartTheme.textColor }} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: chartTheme.dataTextColor }} axisLine={false} tickLine={false} width={100} />
                       <Tooltip
                         formatter={(val) => [formatCurrency(val), 'Долг']}
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                        contentStyle={chartTheme.tooltipStyle}
+                        itemStyle={chartTheme.tooltipItemStyle}
+                        labelStyle={chartTheme.tooltipLabelStyle}
                       />
                       <Bar dataKey="debt" radius={[0, 6, 6, 0]}>
+                        <LabelList dataKey="debt" position="right" formatter={(v) => `${(v/1000000).toFixed(1)}M`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
                         {topDebtorsChartData.map((entry, index) => (
                           <Cell key={`cell-debt-${index}`} fill={entry.fill} />
                         ))}

@@ -24,8 +24,10 @@ import {
   Pie,
   Cell,
   CartesianGrid,
-  ReferenceLine
+  ReferenceLine,
+  LabelList
 } from 'recharts';
+import { useChartTheme } from '../lib/chartTheme';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -37,6 +39,7 @@ import { formatCurrency, formatNumber, formatDate } from '../lib/utils';
 import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 
 export function WarehousePage({ onNavigateToArrivals }) {
+  const chartTheme = useChartTheme();
   const [viewMode, setViewMode] = useState('stocks'); // 'stocks' | 'tickets' | 'movements'
   const [stocks, setStocks] = useState([]);
   const [tickets, setTickets] = useState([]);
@@ -182,15 +185,18 @@ export function WarehousePage({ onNavigateToArrivals }) {
       ],
       renderChart: () => (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={stockLevelChartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-            <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}т`} />
+          <BarChart data={stockLevelChartData} margin={{ top: 25, right: 30, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+            <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartTheme.textColor }} />
+            <YAxis tick={{ fontSize: 11, fill: chartTheme.textColor }} tickFormatter={(v) => `${v}т`} />
             <Tooltip
               formatter={(val, name) => [`${formatNumber(val)} т`, name === 'stock' ? 'Остаток' : 'Мин. порог']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
             <Bar dataKey="stock" name="stock" fill="#0ea5e9" radius={[8, 8, 0, 0]}>
+              <LabelList dataKey="stock" position="top" formatter={(val) => `${formatNumber(val)} т`} style={{ fontSize: '11px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
               {stockLevelChartData.map((entry, index) => (
                 <Cell key={`cell-max-stock-${index}`} fill={entry.stock <= entry.min ? '#f43f5e' : '#0ea5e9'} />
               ))}
@@ -276,7 +282,9 @@ export function WarehousePage({ onNavigateToArrivals }) {
             </Pie>
             <Tooltip
               formatter={(val, name, props) => [`${formatNumber(val)} (${props.payload.name})`, 'Объем']}
-              contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
+              contentStyle={chartTheme.tooltipStyle}
+              itemStyle={chartTheme.tooltipItemStyle}
+              labelStyle={chartTheme.tooltipLabelStyle}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -369,15 +377,18 @@ export function WarehousePage({ onNavigateToArrivals }) {
             <div className="h-44 w-full">
               {stockLevelChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stockLevelChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.6} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                  <BarChart data={stockLevelChartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.gridColor} opacity={0.6} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: chartTheme.textColor }} axisLine={false} tickLine={false} />
                     <Tooltip
                       formatter={(val, name) => [`${formatNumber(val)} т`, name === 'stock' ? 'Остаток' : 'Мин. запас']}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                      contentStyle={chartTheme.tooltipStyle}
+                      itemStyle={chartTheme.tooltipItemStyle}
+                      labelStyle={chartTheme.tooltipLabelStyle}
                     />
                     <Bar dataKey="stock" name="stock" fill="#0ea5e9" radius={[6, 6, 0, 0]}>
+                      <LabelList dataKey="stock" position="top" formatter={(val) => `${formatNumber(val)} т`} style={{ fontSize: '10px', fontWeight: 600, fill: chartTheme.dataTextColor }} />
                       {stockLevelChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.stock <= entry.min ? '#f43f5e' : '#0ea5e9'} />
                       ))}
@@ -425,7 +436,9 @@ export function WarehousePage({ onNavigateToArrivals }) {
                     </Pie>
                     <Tooltip
                       formatter={(val) => formatNumber(val)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                      contentStyle={chartTheme.tooltipStyle}
+                      itemStyle={chartTheme.tooltipItemStyle}
+                      labelStyle={chartTheme.tooltipLabelStyle}
                     />
                   </PieChart>
                 </ResponsiveContainer>
