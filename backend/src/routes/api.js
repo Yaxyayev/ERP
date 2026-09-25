@@ -23,8 +23,9 @@ router.delete('/users/:id', userCtrl.deleteUser);
 router.get('/audit', auditCtrl.getAuditLogs);
 router.post('/audit/cleanup', auditCtrl.cleanupAuditLogs);
 
-// 1. Резервное копирование базы данных
+// 1. Резервное копирование и управление базой данных
 router.get('/backup', backupCtrl.downloadBackup);
+router.post('/system/reset-database', backupCtrl.resetDatabase);
 
 // 2. Справочники
 // Заводы

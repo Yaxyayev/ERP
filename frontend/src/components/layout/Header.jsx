@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Sun, Moon, Database, Menu, CheckCircle2, AlertCircle, Loader2, LogOut, PanelLeftClose, PanelLeft, Search } from 'lucide-react';
+import { Sun, Moon, Database, Menu, CheckCircle2, AlertCircle, Loader2, LogOut, PanelLeftClose, PanelLeft, Search, Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { ResetDatabaseModal } from '../common/ResetDatabaseModal';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,6 +9,7 @@ export function Header({ theme, toggleTheme, onOpenMobileMenu, isSidebarHidden, 
   const { user, logout } = useAuth();
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [backupMessage, setBackupMessage] = useState(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const handleDownloadBackup = async () => {
     try {
@@ -121,6 +123,22 @@ export function Header({ theme, toggleTheme, onOpenMobileMenu, isSidebarHidden, 
             )}
           </Button>
 
+          {/* Reset Database Button (Available for Admin) */}
+          {user?.role === 'admin' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsResetModalOpen(true)}
+              id="reset-db-btn"
+              className="h-[30px] px-2.5 text-xs font-medium text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/60 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+              title="Полный сброс и обнуление данных базы данных"
+            >
+              <Trash2 className="mr-1.5 h-3 w-3 text-rose-500" />
+              <span className="hidden sm:inline">Сброс БД</span>
+              <span className="sm:hidden">Сброс</span>
+            </Button>
+          )}
+
           {/* Theme Switcher */}
           <Button
             variant="ghost"
@@ -162,6 +180,12 @@ export function Header({ theme, toggleTheme, onOpenMobileMenu, isSidebarHidden, 
           )}
         </div>
       </div>
+
+      {/* Модальное окно полного обнуления БД */}
+      <ResetDatabaseModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+      />
     </header>
   );
 }

@@ -117,5 +117,8 @@ export const api = {
     window.URL.revokeObjectURL(downloadUrl);
     a.remove();
     return filename;
-  }
+  },
+
+  // Обнуление и сброс базы данных
+  resetDatabase: (data = {}) => request('/system/reset-database', { method: 'POST', body: JSON.stringify(data) })
 };

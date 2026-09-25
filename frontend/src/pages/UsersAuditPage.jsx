@@ -3,7 +3,7 @@ import {
   Users, Shield, Activity, UserPlus, Search, 
   RefreshCw, CheckCircle2, XCircle, AlertTriangle, 
   Download, Edit2, Trash2, Lock, Eye, LogIn, 
-  ShoppingBag, Truck, DollarSign, ChevronRight, X
+  ShoppingBag, Truck, DollarSign, ChevronRight, X, Database
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -11,10 +11,12 @@ import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
+import { ResetDatabaseModal } from '../components/common/ResetDatabaseModal';
 import { api } from '../api/client';
 
 export default function UsersAuditPage({ currentUser }) {
-  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'audit'
+  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'audit' | 'database'
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   
   // Users state
   const [users, setUsers] = useState([]);
@@ -368,6 +370,13 @@ export default function UsersAuditPage({ currentUser }) {
             <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-tint-mint text-emerald-600 dark:text-emerald-300">
               Live
             </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('database')}
+            className={`pill-tab ${activeTab === 'database' ? 'active' : ''}`}
+          >
+            <Database className="w-3.5 h-3.5 inline mr-1.5" />
+            База данных и Сброс
           </button>
         </div>
       </div>
@@ -740,6 +749,108 @@ export default function UsersAuditPage({ currentUser }) {
         </div>
       )}
 
+      {/* TAB 3: DATABASE & RESET */}
+      {activeTab === 'database' && (
+        <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card 1: Резервное копирование */}
+            <Card className="border-border">
+              <CardHeader className="p-4 pb-2 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-tint-mint text-emerald-600 dark:text-emerald-400">
+                    <Download className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-semibold">Резервная копия базы данных</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Мгновенное скачивание файла .sqlite на ваш компьютер
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Система использует атомарный SQLite Backup API без остановки сервера. Скачанный файл содержит 100% актуальных данных и может использоваться для точки восстановления.
+                </p>
+                <Button
+                  onClick={async () => {
+                    try {
+                      const filename = await api.downloadBackup();
+                      showNotification('success', `Бэкап сохранен: ${filename}`);
+                    } catch (e) {
+                      showNotification('error', e.message);
+                    }
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-center text-xs h-9"
+                >
+                  <Download className="w-3.5 h-3.5 mr-2" />
+                  Скачать актуальный бэкап (.sqlite)
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Card 2: Полный сброс и обнуление данных */}
+            <Card className="border-rose-200 dark:border-rose-900/60 bg-rose-50/20 dark:bg-rose-950/10">
+              <CardHeader className="p-4 pb-2 border-b border-rose-200/60 dark:border-rose-900/40">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-tint-rose text-destructive">
+                    <Trash2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-semibold text-destructive">Полное обнуление данных в БД</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Очистка всех продаж, приходов, остатков и контрагентов
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Позволяет быстро очистить базу без подключения по SSH к серверу. Учетная запись <code className="font-mono bg-background px-1 py-0.5 rounded border border-hairline text-foreground">admin</code> будет сохранена. Перед сбросом создается страховочный бэкап.
+                </p>
+                <Button
+                  onClick={() => setIsResetModalOpen(true)}
+                  size="sm"
+                  className="w-full justify-center text-xs h-9 bg-red-600 hover:bg-red-700 text-white font-medium"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-2" />
+                  Обнулить все данные в БД...
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Card 3: Технические параметры хранилища */}
+          <Card className="border-border">
+            <CardHeader className="p-4 pb-2 border-b border-border">
+              <CardTitle className="text-sm font-semibold">Параметры и состояние хранилища</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 rounded-lg border border-hairline bg-surface">
+                  <span className="text-steel block text-[11px]">Движок базы данных</span>
+                  <span className="font-semibold text-foreground mt-0.5 block">SQLite 3 (WAL mode)</span>
+                </div>
+                <div className="p-3 rounded-lg border border-hairline bg-surface">
+                  <span className="text-steel block text-[11px]">Файл базы на сервере</span>
+                  <span className="font-mono text-foreground mt-0.5 block truncate text-[11px]">data/erp_cement.sqlite</span>
+                </div>
+                <div className="p-3 rounded-lg border border-hairline bg-surface">
+                  <span className="text-steel block text-[11px]">Контроль целостности</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 block">Foreign Keys ON</span>
+                </div>
+                <div className="p-3 rounded-lg border border-hairline bg-surface">
+                  <span className="text-steel block text-[11px]">Главный Администратор</span>
+                  <span className="font-mono text-primary mt-0.5 block">admin (сохраняется)</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* USER MODAL (CREATE / EDIT) */}
       <Modal
         isOpen={userModalOpen}
@@ -918,6 +1029,12 @@ export default function UsersAuditPage({ currentUser }) {
           </div>
         )}
       </Modal>
+
+      {/* Модальное окно полного обнуления БД */}
+      <ResetDatabaseModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+      />
     </div>
   );
 }
