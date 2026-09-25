@@ -63,7 +63,7 @@ export function DirectoriesPage() {
     setModalMode('create');
     setEditingItem(null);
     if (activeTab === 'clients') {
-      setFormData({ name: '', phone: '', company_name: '', balance: 0, notes: '' });
+      setFormData({ name: '', phone: '', company_name: '', balance: 0, initial_debt: '', notes: '' });
     } else if (activeTab === 'factories') {
       setFormData({ name: '', contact_person: '', phone: '', address: '', notes: '' });
     } else if (activeTab === 'vehicles') {
@@ -88,7 +88,10 @@ export function DirectoriesPage() {
   const openEditModal = (item) => {
     setModalMode('edit');
     setEditingItem(item);
-    setFormData({ ...item });
+    setFormData({
+      ...item,
+      initial_debt: item.balance < 0 ? Math.abs(item.balance).toString() : ''
+    });
     setIsModalOpen(true);
   };
 
@@ -99,8 +102,12 @@ export function DirectoriesPage() {
       setFeedback(null);
 
       if (activeTab === 'clients') {
-        if (modalMode === 'create') await api.createClient(formData);
-        else await api.updateClient(editingItem.id, formData);
+        const clientData = {
+          ...formData,
+          initial_debt: formData.initial_debt !== undefined ? formData.initial_debt : ''
+        };
+        if (modalMode === 'create') await api.createClient(clientData);
+        else await api.updateClient(editingItem.id, clientData);
       } else if (activeTab === 'factories') {
         if (modalMode === 'create') await api.createFactory(formData);
         else await api.updateFactory(editingItem.id, formData);
@@ -413,8 +420,22 @@ export function DirectoriesPage() {
           {activeTab === 'clients' && (
             <>
               <Input label="ФИО / Наименование" required value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-              <Input label="Телефон" placeholder="+998 90 123-45-67" value={formData.phone || ''} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+              <Input
+                label="Телефон"
+                formatPhone
+                placeholder="+998 00 123 4567"
+                value={formData.phone || ''}
+                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+              />
               <Input label="Компания / Заказчик" value={formData.company_name || ''} onChange={e => setFormData({ ...formData, company_name: e.target.value })} />
+              <Input
+                label="Начальная задолженность (долг клиента)"
+                formatSpaces
+                placeholder="0"
+                helperText="Если у контрагента уже есть долг, укажите сумму (сум)"
+                value={formData.initial_debt || ''}
+                onChange={e => setFormData({ ...formData, initial_debt: e.target.value })}
+              />
               <Input label="Примечание" value={formData.notes || ''} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
             </>
           )}
@@ -431,7 +452,13 @@ export function DirectoriesPage() {
               />
               <Input label="Марка / Модель" placeholder="HOWO / MAN" value={formData.model || ''} onChange={e => setFormData({ ...formData, model: e.target.value })} />
               <Input label="Водитель" value={formData.driver_name || ''} onChange={e => setFormData({ ...formData, driver_name: e.target.value })} />
-              <Input label="Телефон водителя" value={formData.driver_phone || ''} onChange={e => setFormData({ ...formData, driver_phone: e.target.value })} />
+              <Input
+                label="Телефон водителя"
+                formatPhone
+                placeholder="+998 00 123 4567"
+                value={formData.driver_phone || ''}
+                onChange={e => setFormData({ ...formData, driver_phone: e.target.value })}
+              />
             </>
           )}
 
@@ -439,7 +466,13 @@ export function DirectoriesPage() {
             <>
               <Input label="Название завода" required placeholder="Бекабадцемент" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} />
               <Input label="Контактное лицо" value={formData.contact_person || ''} onChange={e => setFormData({ ...formData, contact_person: e.target.value })} />
-              <Input label="Телефон" value={formData.phone || ''} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+              <Input
+                label="Телефон"
+                formatPhone
+                placeholder="+998 00 123 4567"
+                value={formData.phone || ''}
+                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+              />
               <Input label="Адрес" value={formData.address || ''} onChange={e => setFormData({ ...formData, address: e.target.value })} />
             </>
           )}

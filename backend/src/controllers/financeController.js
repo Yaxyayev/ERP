@@ -96,9 +96,10 @@ function createTransaction(req, res) {
       });
     }
 
+    const { cleanNumber } = require('../utils/numberUtils');
     const cur = currency === 'USD' ? 'USD' : 'UZS';
-    const rate = Number(exchange_rate) || 1.0;
-    const originalAmount = Number(amount);
+    const rate = cleanNumber(exchange_rate, 1.0);
+    const originalAmount = cleanNumber(amount);
     const amountUzs = cur === 'USD' ? originalAmount * rate : originalAmount;
     const isBroker = is_broker_account ? 1 : (category === 'broker_deposit' ? 1 : 0);
 
@@ -134,6 +135,39 @@ function createTransaction(req, res) {
           INSERT INTO broker_account_logs (date, type, amount, comment)
           VALUES (?, 'deposit', ?, ?)
         `).run(date, amountUzs, comment || 'Пополнение брокерского счета');
+      }
+
+      // Если это поступление от клиента по погашению долга, обновляем баланс клиента и сделки
+      if (transaction_type === 'income' && client_id && (category === 'debt_repayment' || category === 'cement_sale')) {
+        db.prepare(`
+          UPDATE clients 
+          SET balance = balance + ? 
+          WHERE id = ?
+        `).run(amountUzs, client_id);
+
+        let remainingRepay = amountUzs;
+        const unpaidSales = db.prepare(`
+          SELECT id, total_amount, paid_amount, debt_amount 
+          FROM sales 
+          WHERE client_id = ? AND debt_amount > 0 
+          ORDER BY date ASC, id ASC
+        `).all(client_id);
+
+        for (const sale of unpaidSales) {
+          if (remainingRepay <= 0) break;
+          const toPayForSale = Math.min(sale.debt_amount, remainingRepay);
+          const newPaidAmount = sale.paid_amount + toPayForSale;
+          const newDebtAmount = Math.max(0, sale.debt_amount - toPayForSale);
+          const newStatus = newDebtAmount === 0 ? 'paid' : 'partial';
+
+          db.prepare(`
+            UPDATE sales 
+            SET paid_amount = ?, debt_amount = ?, payment_status = ? 
+            WHERE id = ?
+          `).run(newPaidAmount, newDebtAmount, newStatus, sale.id);
+
+          remainingRepay -= toPayForSale;
+        }
       }
 
       return result.lastInsertRowid;
@@ -191,13 +225,14 @@ function getDebts(req, res) {
 // 4. Погашение задолженности клиентом
 function repayDebt(req, res) {
   try {
+    const { cleanNumber } = require('../utils/numberUtils');
     const { client_id, amount, date, payment_method, comment } = req.body;
 
-    if (!client_id || !amount || Number(amount) <= 0) {
+    const repaySum = cleanNumber(amount);
+    if (!client_id || repaySum <= 0) {
       return res.status(400).json({ success: false, error: 'Укажите клиента и положительную сумму погашения' });
     }
 
-    const repaySum = Number(amount);
     const opDate = date || new Date().toISOString().split('T')[0];
 
     const repayTx = db.transaction(() => {
@@ -226,6 +261,31 @@ function repayDebt(req, res) {
         comment || `Погашение дебиторской задолженности клиентом ${client.name}`
       );
 
+      // Погашаем открытые сделки в долг по очереди (FIFO)
+      let remainingRepay = repaySum;
+      const unpaidSales = db.prepare(`
+        SELECT id, total_amount, paid_amount, debt_amount 
+        FROM sales 
+        WHERE client_id = ? AND debt_amount > 0 
+        ORDER BY date ASC, id ASC
+      `).all(client_id);
+
+      for (const sale of unpaidSales) {
+        if (remainingRepay <= 0) break;
+        const toPayForSale = Math.min(sale.debt_amount, remainingRepay);
+        const newPaidAmount = sale.paid_amount + toPayForSale;
+        const newDebtAmount = Math.max(0, sale.debt_amount - toPayForSale);
+        const newStatus = newDebtAmount === 0 ? 'paid' : 'partial';
+
+        db.prepare(`
+          UPDATE sales 
+          SET paid_amount = ?, debt_amount = ?, payment_status = ? 
+          WHERE id = ?
+        `).run(newPaidAmount, newDebtAmount, newStatus, sale.id);
+
+        remainingRepay -= toPayForSale;
+      }
+
       const updatedClient = db.prepare('SELECT * FROM clients WHERE id = ?').get(client_id);
       return updatedClient;
     });
@@ -247,6 +307,54 @@ function repayDebt(req, res) {
       success: true,
       message: 'Задолженность успешно погашена и учтена в кассе',
       data: client
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+}
+
+// 4.1. Ручная фиксация / корректировка долга клиента
+function adjustDebt(req, res) {
+  try {
+    const { cleanNumber } = require('../utils/numberUtils');
+    const { client_id, amount, action, comment } = req.body;
+
+    const numAmount = cleanNumber(amount);
+    if (!client_id || numAmount <= 0) {
+      return res.status(400).json({ success: false, error: 'Укажите клиента и положительную сумму' });
+    }
+
+    const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(client_id);
+    if (!client) {
+      return res.status(404).json({ success: false, error: 'Клиент не найден' });
+    }
+
+    // action: 'add_debt' (увеличить долг, уменьшить balance) или 'reduce_debt' (уменьшить долг)
+    const delta = action === 'add_debt' ? -numAmount : numAmount;
+
+    db.prepare(`
+      UPDATE clients 
+      SET balance = balance + ? 
+      WHERE id = ?
+    `).run(delta, client_id);
+
+    const updatedClient = db.prepare('SELECT * FROM clients WHERE id = ?').get(client_id);
+
+    const currentUser = getUserFromReq(req);
+    const clientIp = req.ip || req.connection?.remoteAddress || '127.0.0.1';
+    logAudit(
+      currentUser.id,
+      currentUser.username,
+      'DEBT_ADJUST',
+      `Клиент: ${client.name}`,
+      `${action === 'add_debt' ? 'Зафиксирован долг' : 'Списан долг'} на сумму ${numAmount.toLocaleString()} сум. Новый баланс: ${Number(updatedClient.balance).toLocaleString()} сум. Примечание: ${comment || '—'}`,
+      clientIp
+    );
+
+    res.json({
+      success: true,
+      message: 'Задолженность клиента успешно обновлена',
+      data: updatedClient
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -294,5 +402,6 @@ module.exports = {
   createTransaction,
   getDebts,
   repayDebt,
+  adjustDebt,
   getBrokerAccount
 };

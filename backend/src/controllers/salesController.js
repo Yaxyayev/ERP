@@ -87,13 +87,16 @@ function createSale(req, res) {
       });
     }
 
-    const qty = Number(tonnage) || 0;
-    const price = Number(price_per_ton) || 0;
-    const cementSum = Number(cement_amount) || (qty * price);
-    const logisticsSum = Number(logistics_amount) || 0;
-    const grandTotal = total_amount ? Number(total_amount) : (cementSum + logisticsSum);
-    const paidSum = Number(paid_amount) || 0;
-    const debtSum = grandTotal - paidSum;
+    const { cleanNumber } = require('../utils/numberUtils');
+
+    const qty = cleanNumber(tonnage);
+    const price = cleanNumber(price_per_ton);
+    const cementSum = cleanNumber(cement_amount, qty * price);
+    const logRate = cleanNumber(logistics_rate_per_ton);
+    const logisticsSum = cleanNumber(logistics_amount, delivery_type === 'delivery' ? qty * logRate : 0);
+    const grandTotal = total_amount ? cleanNumber(total_amount) : (cementSum + logisticsSum);
+    const paidSum = cleanNumber(paid_amount);
+    const debtSum = Math.max(0, grandTotal - paidSum);
 
     if (grandTotal < 0 || paidSum < 0) {
       return res.status(400).json({ success: false, error: 'Суммы не могут быть отрицательными' });
@@ -193,34 +196,54 @@ function createSale(req, res) {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
+      let finalPaidSum = paidSum;
+      let finalDebtSum = debtSum;
+      let finalStatus = payment_status;
+
+      if (payment_status === 'debt') {
+        finalPaidSum = 0;
+        finalDebtSum = grandTotal;
+        finalStatus = 'debt';
+      } else if (payment_status === 'paid') {
+        finalPaidSum = grandTotal;
+        finalDebtSum = 0;
+        finalStatus = 'paid';
+      } else if (payment_status === 'partial') {
+        finalPaidSum = Math.min(paidSum, grandTotal);
+        finalDebtSum = Math.max(0, grandTotal - finalPaidSum);
+        finalStatus = finalDebtSum > 0 ? 'partial' : 'paid';
+      } else {
+        finalStatus = finalPaidSum >= grandTotal ? 'paid' : (finalPaidSum > 0 ? 'partial' : 'debt');
+      }
+
       const saleResult = insertSale.run(
         saleNumber, date, client_id, sale_type,
         factory_id || null, product_id || null, packaging_type || null,
         qty, price, cementSum,
         delivery_type || 'pickup', vehicle_id || null, vehicle_number || null,
         is_company_vehicle === 0 ? 0 : 1,
-        Number(logistics_rate_per_ton) || 0, logisticsSum, grandTotal,
+        logRate, logisticsSum, grandTotal,
         warehouse_source || null, ticket_id || null,
-        payment_status || (paidSum >= grandTotal ? 'paid' : (paidSum > 0 ? 'partial' : 'debt')),
-        paidSum, debtSum > 0 ? debtSum : 0, comment || null
+        finalStatus,
+        finalPaidSum, finalDebtSum > 0 ? finalDebtSum : 0, comment || null
       );
 
       const saleId = saleResult.lastInsertRowid;
 
       // 5. Корректировка баланса клиента (фиксация дебиторской задолженности)
-      if (debtSum > 0) {
+      if (finalDebtSum > 0) {
         db.prepare(`
           UPDATE clients 
           SET balance = balance - ? 
           WHERE id = ?
-        `).run(debtSum, client_id);
+        `).run(finalDebtSum, client_id);
       }
 
       // 6. Проводка оплаты в кассу (если внесены деньги)
-      if (paidSum > 0) {
-        const rate = Number(exchange_rate) || 1.0;
+      if (finalPaidSum > 0) {
+        const rate = cleanNumber(exchange_rate, 1.0);
         const cur = currency === 'USD' ? 'USD' : 'UZS';
-        const amountUzs = cur === 'USD' ? paidSum * rate : paidSum;
+        const amountUzs = cur === 'USD' ? finalPaidSum * rate : finalPaidSum;
         const cat = sale_type === 'cement' ? 'cement_sale' : 'logistics_service';
 
         db.prepare(`

@@ -70,6 +70,7 @@ export const api = {
   createTransaction: (data) => request('/finance/transactions', { method: 'POST', body: JSON.stringify(data) }),
   getDebts: () => request('/finance/debts'),
   repayDebt: (data) => request('/finance/debts/repay', { method: 'POST', body: JSON.stringify(data) }),
+  adjustDebt: (data) => request('/finance/debts/adjust', { method: 'POST', body: JSON.stringify(data) }),
   getBrokerAccount: () => request('/finance/broker'),
 
   // Отчеты и дашборды

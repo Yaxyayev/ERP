@@ -161,3 +161,52 @@ export function formatPlateNumber(val, prevVal = '') {
     return res;
   }
 }
+
+export function formatPhoneNumber(val, prevVal = '') {
+  if (!val) return '';
+
+  // Плавный бэкспейс: если пользователь удалил завершающий пробел, удаляем и предшествующий символ
+  if (prevVal && val.length < prevVal.length) {
+    if (prevVal.endsWith(' ') && !val.endsWith(' ') && prevVal.slice(0, -1) === val) {
+      val = val.slice(0, -1);
+    }
+  }
+
+  // Если очистили всё или стёрли до префикса
+  if (val === '+' || val === '+9' || val === '+99' || val === '+998' || val === '+998 ') {
+    if (prevVal && prevVal.length > val.length) {
+      return '';
+    }
+    return '+998 ';
+  }
+
+  const rawDigits = val.replace(/\D/g, '');
+  if (!rawDigits) {
+    return val.includes('+') ? '+998 ' : '';
+  }
+
+  let digits = rawDigits;
+  // Если строка уже начинается с 998, отрезаем код страны
+  if (digits.startsWith('998')) {
+    digits = digits.slice(3);
+  }
+
+  // Максимум 9 цифр после +998 (2 код + 3 номер + 4 номер = 9 цифр)
+  digits = digits.slice(0, 9);
+
+  if (digits.length === 0) {
+    return '+998 ';
+  }
+
+  // Образец: +998 00 123 4567
+  let res = '+998 ' + digits.slice(0, 2);
+  if (digits.length > 2) {
+    res += ' ' + digits.slice(2, 5);
+  }
+  if (digits.length > 5) {
+    res += ' ' + digits.slice(5, 9);
+  }
+
+  return res;
+}
+

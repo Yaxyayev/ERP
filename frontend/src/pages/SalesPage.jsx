@@ -254,6 +254,11 @@ export function SalesPage() {
 
       await api.createSale({
         ...formData,
+        tonnage: String(formData.tonnage || 0).replace(/\s+/g, ''),
+        price_per_ton: String(formData.price_per_ton || 0).replace(/\s+/g, ''),
+        logistics_rate_per_ton: String(formData.logistics_rate_per_ton || 0).replace(/\s+/g, ''),
+        paid_amount: String(formData.paid_amount || 0).replace(/\s+/g, ''),
+        total_amount: formData.total_amount,
         sale_type: saleType
       });
 

@@ -74,15 +74,21 @@ function getClients(req, res) {
 
 function createClient(req, res) {
   try {
-    const { name, phone, company_name, balance, notes } = req.body;
+    const { cleanNumber } = require('../utils/numberUtils');
+    const { name, phone, company_name, balance, initial_debt, notes } = req.body;
     if (!name) {
       return res.status(400).json({ success: false, error: 'Имя клиента обязательно' });
     }
+    let clientBalance = cleanNumber(balance);
+    if (initial_debt && cleanNumber(initial_debt) > 0) {
+      clientBalance = -cleanNumber(initial_debt);
+    }
+
     const stmt = db.prepare(`
       INSERT INTO clients (name, phone, company_name, balance, notes)
       VALUES (?, ?, ?, ?, ?)
     `);
-    const result = stmt.run(name, phone || null, company_name || null, Number(balance) || 0, notes || null);
+    const result = stmt.run(name, phone || null, company_name || null, clientBalance, notes || null);
     const newClient = db.prepare('SELECT * FROM clients WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ success: true, data: newClient });
   } catch (error) {
@@ -92,14 +98,35 @@ function createClient(req, res) {
 
 function updateClient(req, res) {
   try {
+    const { cleanNumber } = require('../utils/numberUtils');
     const { id } = req.params;
-    const { name, phone, company_name, notes } = req.body;
-    const stmt = db.prepare(`
-      UPDATE clients
-      SET name = ?, phone = ?, company_name = ?, notes = ?
-      WHERE id = ?
-    `);
-    const result = stmt.run(name, phone, company_name, notes, id);
+    const { name, phone, company_name, balance, initial_debt, notes } = req.body;
+    
+    let stmt;
+    let result;
+    if (initial_debt !== undefined && initial_debt !== null && initial_debt !== '') {
+      stmt = db.prepare(`
+        UPDATE clients
+        SET name = ?, phone = ?, company_name = ?, balance = ?, notes = ?
+        WHERE id = ?
+      `);
+      result = stmt.run(name, phone, company_name, -cleanNumber(initial_debt), notes, id);
+    } else if (balance !== undefined && balance !== null && balance !== '') {
+      stmt = db.prepare(`
+        UPDATE clients
+        SET name = ?, phone = ?, company_name = ?, balance = ?, notes = ?
+        WHERE id = ?
+      `);
+      result = stmt.run(name, phone, company_name, cleanNumber(balance), notes, id);
+    } else {
+      stmt = db.prepare(`
+        UPDATE clients
+        SET name = ?, phone = ?, company_name = ?, notes = ?
+        WHERE id = ?
+      `);
+      result = stmt.run(name, phone, company_name, notes, id);
+    }
+
     if (result.changes === 0) {
       return res.status(404).json({ success: false, error: 'Клиент не найден' });
     }

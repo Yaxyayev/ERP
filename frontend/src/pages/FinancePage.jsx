@@ -70,6 +70,15 @@ export function FinancePage() {
   const [repayAmount, setRepayAmount] = useState('');
   const [repayMethod, setRepayMethod] = useState('cash');
 
+  // Ручная фиксация / корректировка долга
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [adjustForm, setAdjustForm] = useState({
+    client_id: '',
+    amount: '',
+    action: 'add_debt',
+    comment: ''
+  });
+
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -120,8 +129,13 @@ export function FinancePage() {
       setFactories(fRes.data || []);
       setVehicles(vRes.data || []);
 
-      if (cRes.data?.length > 0 && !incomeForm.client_id) {
-        setIncomeForm(prev => ({ ...prev, client_id: cRes.data[0].id }));
+      if (cRes.data?.length > 0) {
+        if (!incomeForm.client_id) {
+          setIncomeForm(prev => ({ ...prev, client_id: cRes.data[0].id }));
+        }
+        if (!adjustForm.client_id) {
+          setAdjustForm(prev => ({ ...prev, client_id: cRes.data[0].id }));
+        }
       }
       if (fRes.data?.length > 0 && !expenseForm.factory_id) {
         setExpenseForm(prev => ({ ...prev, factory_id: fRes.data[0].id }));
@@ -142,6 +156,7 @@ export function FinancePage() {
     try {
       setSubmitting(true);
       setFeedback(null);
+      const cleanAmt = String(incomeForm.amount || 0).replace(/\s+/g, '');
       await api.createTransaction({
         date: incomeForm.date,
         transaction_type: 'income',
@@ -149,7 +164,7 @@ export function FinancePage() {
         client_id: incomeForm.client_id,
         currency: incomeForm.currency,
         exchange_rate: incomeForm.currency === 'USD' ? incomeForm.exchange_rate : 1,
-        amount: incomeForm.amount,
+        amount: cleanAmt,
         payment_method: incomeForm.payment_method,
         comment: incomeForm.comment
       });
@@ -171,6 +186,7 @@ export function FinancePage() {
       setSubmitting(true);
       setFeedback(null);
       const category = expenseScope === 'cement' ? expenseForm.cement_category : expenseForm.logistics_category;
+      const cleanAmt = String(expenseForm.amount || 0).replace(/\s+/g, '');
       await api.createTransaction({
         date: expenseForm.date,
         transaction_type: 'expense',
@@ -180,7 +196,7 @@ export function FinancePage() {
         vehicle_number: expenseScope === 'logistics' ? expenseForm.vehicle_number : null,
         currency: expenseForm.currency,
         exchange_rate: expenseForm.currency === 'USD' ? expenseForm.exchange_rate : 1,
-        amount: expenseForm.amount,
+        amount: cleanAmt,
         payment_method: expenseForm.payment_method,
         comment: expenseForm.comment,
         is_broker_account: category === 'broker_deposit' ? 1 : 0
@@ -202,20 +218,45 @@ export function FinancePage() {
     try {
       setSubmitting(true);
       setFeedback(null);
+      const cleanAmt = String(repayAmount || 0).replace(/\s+/g, '');
       await api.repayDebt({
         client_id: repayModalClient.id,
-        amount: repayAmount,
+        amount: cleanAmt,
         payment_method: repayMethod,
         date: new Date().toISOString().split('T')[0],
         comment: `Погашение задолженности клиентом ${repayModalClient.name}`
       });
-      setFeedback({ type: 'success', message: `Долг клиента ${repayModalClient.name} уменьшен!` });
+      setFeedback({ type: 'success', message: `Долг клиента ${repayModalClient.name} успешно уменьшен!` });
       setRepayModalClient(null);
       setRepayAmount('');
       loadAll();
       setTimeout(() => setFeedback(null), 5000);
     } catch (err) {
       setFeedback({ type: 'error', message: err.message || 'Ошибка погашения долга' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAdjustDebt = async (e) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      setFeedback(null);
+      const cleanAmt = String(adjustForm.amount || 0).replace(/\s+/g, '');
+      await api.adjustDebt({
+        client_id: adjustForm.client_id,
+        amount: cleanAmt,
+        action: adjustForm.action,
+        comment: adjustForm.comment
+      });
+      setFeedback({ type: 'success', message: 'Задолженность клиента успешно обновлена!' });
+      setAdjustModalOpen(false);
+      setAdjustForm({ client_id: clients[0]?.id || '', amount: '', action: 'add_debt', comment: '' });
+      loadAll();
+      setTimeout(() => setFeedback(null), 5000);
+    } catch (err) {
+      setFeedback({ type: 'error', message: err.message || 'Ошибка обновления долга' });
     } finally {
       setSubmitting(false);
     }
@@ -840,8 +881,20 @@ export function FinancePage() {
           {/* Таблица должников (Notion Database Table) */}
           <Card className="border-hairline rounded-lg">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
-              <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Список должников</CardTitle>
-              <Badge variant="rose">Общий долг: {formatCurrency(totalDebt)}</Badge>
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-sm font-semibold text-charcoal dark:text-foreground">Список должников</CardTitle>
+                <Badge variant="rose">Общий долг: {formatCurrency(totalDebt)}</Badge>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setAdjustForm(prev => ({ ...prev, client_id: clients[0]?.id || '' }));
+                  setAdjustModalOpen(true);
+                }}
+                className="h-7 text-xs font-medium"
+              >
+                + Зафиксировать долг
+              </Button>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
@@ -1029,6 +1082,64 @@ export function FinancePage() {
           <div className="flex justify-end gap-2 pt-3 border-t border-border">
             <Button type="button" variant="outline" onClick={() => setRepayModalClient(null)}>Отмена</Button>
             <Button type="submit" isLoading={submitting}>Погасить задолженность</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* МОДАЛКА РУЧНОЙ ФИКСАЦИИ / КОРРЕКТИРОВКИ ДОЛГА */}
+      <Modal isOpen={adjustModalOpen} onClose={() => setAdjustModalOpen(false)} title="Фиксация или корректировка долга клиента">
+        <form onSubmit={handleAdjustDebt} className="space-y-4">
+          <div className="space-y-1">
+            <Select
+              label="Выберите клиента"
+              required
+              value={adjustForm.client_id}
+              onChange={e => setAdjustForm({ ...adjustForm, client_id: e.target.value })}
+            >
+              <option value="">Выберите контрагента...</option>
+              {clients.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name} {c.company_name ? `(${c.company_name})` : ''} — текущий баланс: {formatCurrency(c.balance)}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Select
+              label="Действие"
+              value={adjustForm.action}
+              onChange={e => setAdjustForm({ ...adjustForm, action: e.target.value })}
+            >
+              <option value="add_debt">Начислить долг (клиент должен)</option>
+              <option value="reduce_debt">Списать / уменьшить долг</option>
+            </Select>
+
+            <Input
+              formatSpaces
+              label="Сумма (сум)"
+              required
+              placeholder="1 000 000"
+              value={adjustForm.amount}
+              onChange={e => setAdjustForm({ ...adjustForm, amount: e.target.value })}
+            />
+          </div>
+
+          <Input
+            type="text"
+            label="Причина / Примечание"
+            placeholder="Например: Задолженность по отгрузке цемента"
+            value={adjustForm.comment}
+            onChange={e => setAdjustForm({ ...adjustForm, comment: e.target.value })}
+          />
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-border">
+            <Button type="button" variant="outline" onClick={() => setAdjustModalOpen(false)}>
+              Отмена
+            </Button>
+            <Button type="submit" isLoading={submitting}>
+              Сохранить долг
+            </Button>
           </div>
         </form>
       </Modal>

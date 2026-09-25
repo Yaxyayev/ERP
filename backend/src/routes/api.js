@@ -69,6 +69,7 @@ router.get('/finance/transactions', financeCtrl.getTransactions);
 router.post('/finance/transactions', financeCtrl.createTransaction);
 router.get('/finance/debts', financeCtrl.getDebts);
 router.post('/finance/debts/repay', financeCtrl.repayDebt);
+router.post('/finance/debts/adjust', financeCtrl.adjustDebt);
 router.get('/finance/broker', financeCtrl.getBrokerAccount);
 
 // 6. Аналитика, отчеты и дашборды

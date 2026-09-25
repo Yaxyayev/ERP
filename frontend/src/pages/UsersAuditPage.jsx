@@ -939,7 +939,8 @@ export default function UsersAuditPage({ currentUser }) {
           <div>
             <label className="block text-xs font-medium text-steel mb-1.5">Контактный телефон</label>
             <Input
-              placeholder="+998 90 000-00-00"
+              formatPhone
+              placeholder="+998 00 123 4567"
               value={userForm.phone}
               onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
             />

@@ -1,8 +1,8 @@
 import React from 'react';
-import { cn, formatThousands, parseThousands, formatPlateNumber } from '../../lib/utils';
+import { cn, formatThousands, parseThousands, formatPlateNumber, formatPhoneNumber } from '../../lib/utils';
 
 export const Input = React.forwardRef(
-  ({ className, type = 'text', label, error, helperText, formatSpaces, formatPlate, onChange, value, ...props }, ref) => {
+  ({ className, type = 'text', label, error, helperText, formatSpaces, formatPlate, formatPhone, onChange, onFocus, value, placeholder, ...props }, ref) => {
     const handleChange = (e) => {
       if (!onChange) return;
       if (formatSpaces) {
@@ -25,16 +25,46 @@ export const Input = React.forwardRef(
             name: props.name
           }
         });
+      } else if (formatPhone) {
+        const formatted = formatPhoneNumber(e.target.value, value || '');
+        onChange({
+          ...e,
+          target: {
+            ...e.target,
+            value: formatted,
+            name: props.name
+          }
+        });
       } else {
         onChange(e);
       }
+    };
+
+    const handleFocus = (e) => {
+      if (formatPhone && (!value || value === '')) {
+        onChange && onChange({
+          ...e,
+          target: {
+            ...e.target,
+            value: '+998 ',
+            name: props.name
+          }
+        });
+      }
+      onFocus && onFocus(e);
     };
 
     const displayValue = formatSpaces
       ? formatThousands(value)
       : formatPlate
       ? formatPlateNumber(value)
+      : formatPhone
+      ? formatPhoneNumber(value)
       : value;
+
+    const effectivePlaceholder = formatPhone
+      ? (placeholder || '+998 00 123 4567')
+      : placeholder;
 
     return (
       <div className="w-full space-y-1">
@@ -47,6 +77,8 @@ export const Input = React.forwardRef(
           type={formatSpaces ? 'text' : type}
           value={displayValue !== undefined ? displayValue : ''}
           onChange={handleChange}
+          onFocus={handleFocus}
+          placeholder={effectivePlaceholder}
           className={cn(
             'flex h-[36px] w-full rounded-md border border-hairline hover:border-hairline-strong bg-background px-3 py-1.5 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/60 transition-colors focus-visible:outline-none focus-visible:border-[#5645d4] focus-visible:ring-1 focus-visible:ring-[#5645d4] disabled:cursor-not-allowed disabled:opacity-50',
             error && 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive',
