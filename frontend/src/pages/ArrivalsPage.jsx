@@ -19,6 +19,9 @@ export function ArrivalsPage() {
   const [factories, setFactories] = useState([]);
   const [products, setProducts] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [vehicleSelectionMode, setVehicleSelectionMode] = useState('fleet'); // 'fleet' | 'custom'
+  const [ticketSelectionMode, setTicketSelectionMode] = useState('new'); // 'new' | 'existing'
   const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,16 +45,18 @@ export function ArrivalsPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [arrRes, fRes, pRes, vRes] = await Promise.all([
+      const [arrRes, fRes, pRes, vRes, tRes] = await Promise.all([
         api.getArrivals(),
         api.getFactories(),
         api.getProducts(),
-        api.getVehicles()
+        api.getVehicles(),
+        api.getTickets().catch(() => ({ data: [] }))
       ]);
       setArrivals(arrRes.data || []);
       setFactories(fRes.data || []);
       setProducts(pRes.data || []);
       setVehicles(vRes.data || []);
+      setTickets(tRes.data || []);
 
       if (fRes.data?.length > 0 && !formData.factory_id) {
         setFormData(prev => ({ ...prev, factory_id: fRes.data[0].id }));
@@ -100,7 +105,10 @@ export function ArrivalsPage() {
       setFeedback(null);
 
       if (!formData.tonnage || parseFloat(formData.tonnage) <= 0) {
-        throw new Error('Введите корректный тоннаж');
+        throw new Error('Укажите корректный объем цемента (тоннаж больше 0 т)');
+      }
+      if (!formData.price_per_ton || parseFloat(formData.price_per_ton) <= 0) {
+        throw new Error('Укажите цену закупки за тонну');
       }
       if (formData.destination === 'ticket' && !formData.ticket_number.trim()) {
         throw new Error('При оприходовании в тикет необходимо указать номер тикета');
@@ -186,7 +194,7 @@ export function ArrivalsPage() {
                       {arr.packaging_type === 'bulk' ? (
                         <Badge variant="peach" className="text-[10px]">Навал</Badge>
                       ) : (
-                        <Badge variant="lavender" className="text-[10px]">Мешки (50кг)</Badge>
+                        <Badge variant="lavender" className="text-[10px]">Мешки</Badge>
                       )}
                     </td>
                     <td className="py-2.5 px-3 text-right font-semibold text-foreground">{formatNumber(arr.tonnage)} т</td>
@@ -215,7 +223,15 @@ export function ArrivalsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <Input type="date" label="Дата" required value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
-            <Select label="Завод-производитель" required value={formData.factory_id} onChange={e => setFormData({ ...formData, factory_id: e.target.value })}>
+            <Select label="Завод-производитель" required value={formData.factory_id} onChange={e => {
+              const facId = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                factory_id: facId,
+                // сбросить тикет при смене завода
+                ticket_number: ''
+              }));
+            }}>
               <option value="">Выберите завод...</option>
               {factories.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
             </Select>
@@ -224,23 +240,99 @@ export function ArrivalsPage() {
           <div className="grid grid-cols-2 gap-4">
             <Select label="Товар" required value={formData.product_id} onChange={e => handleProductChange(e.target.value)}>
               <option value="">Выберите товар...</option>
-              {products.map(p => <option key={p.id} value={p.id}>{p.name} [{p.cement_grade || ''}]</option>)}
+              {products
+                .filter(p => !formData.factory_id || !p.factory_id || p.factory_id === parseInt(formData.factory_id))
+                .map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} [{p.cement_grade || ''} • {p.packaging_type === 'bag' ? 'Мешок' : 'Навал'}]
+                  </option>
+                ))}
             </Select>
-            <Select label="Фасовка" value={formData.packaging_type} onChange={e => setFormData({ ...formData, packaging_type: e.target.value })}>
-              <option value="bulk">Навал (россыпь)</option>
-              <option value="bag">Мешок (50кг)</option>
+
+            {/* Автоматически согласованная фасовка, исключающая ошибку "мешки в россыпь" */}
+            <Select
+              label="Фасовка"
+              value={formData.packaging_type}
+              onChange={e => setFormData({ ...formData, packaging_type: e.target.value })}
+            >
+              <option value="bulk">Навал</option>
+              <option value="bag">Мешки</option>
             </Select>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <Input type="number" step="0.01" min="0.01" label="Тоннаж (т)" required value={formData.tonnage} onChange={e => setFormData({ ...formData, tonnage: e.target.value })} />
-            <Input type="number" step="1" min="0" label="Цена за тонну" required value={formData.price_per_ton} onChange={e => setFormData({ ...formData, price_per_ton: e.target.value })} />
-            <Input type="text" label="Итого сумма" readOnly value={formData.total_amount ? formatCurrency(formData.total_amount) : '0 сум'} className="bg-muted font-bold" />
+            <Input
+              type="number"
+              step="0.01"
+              min="0.01"
+              label="Тоннаж (т)"
+              required
+              placeholder="30"
+              value={formData.tonnage}
+              onChange={e => setFormData({ ...formData, tonnage: e.target.value })}
+            />
+            <Input
+              type="text"
+              label="Цена за тонну"
+              required
+              formatSpaces={true}
+              placeholder="750 000"
+              value={formData.price_per_ton}
+              onChange={e => setFormData({ ...formData, price_per_ton: e.target.value })}
+            />
+            <Input
+              type="text"
+              label="Итого сумма"
+              readOnly
+              value={formData.total_amount ? formatCurrency(formData.total_amount) : '0 сум'}
+              className="bg-muted font-bold"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input type="text" label="Номер машины" placeholder="01 A 777 AA" value={formData.vehicle_number} onChange={e => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })} />
-            <Select label="Назначение прихода" value={formData.destination} onChange={e => setFormData({ ...formData, destination: e.target.value })}>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-foreground block">
+                Транспорт / Номер машины
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={vehicleSelectionMode === 'fleet' ? formData.vehicle_number : 'custom'}
+                  onChange={e => {
+                    if (e.target.value === 'custom') {
+                      setVehicleSelectionMode('custom');
+                      setFormData(prev => ({ ...prev, vehicle_number: '' }));
+                    } else {
+                      setVehicleSelectionMode('fleet');
+                      setFormData(prev => ({ ...prev, vehicle_number: e.target.value }));
+                    }
+                  }}
+                  className="flex h-[36px] w-full rounded-md border border-hairline bg-background px-3 py-1.5 text-xs sm:text-sm text-foreground focus:outline-none focus:border-primary"
+                >
+                  <option value="">Выберите из автопарка...</option>
+                  {vehicles.map(v => (
+                    <option key={v.id} value={v.plate_number}>
+                      {v.plate_number} — {v.model || 'Тягач'}
+                    </option>
+                  ))}
+                  <option value="custom">✏️ Ввести другой номер вручную</option>
+                </select>
+              </div>
+              {vehicleSelectionMode === 'custom' && (
+                <Input
+                  type="text"
+                  placeholder="01 A 777 AA"
+                  value={formData.vehicle_number}
+                  onChange={e => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
+                  className="mt-1"
+                />
+              )}
+            </div>
+
+            <Select
+              label="Назначение прихода"
+              value={formData.destination}
+              onChange={e => setFormData({ ...formData, destination: e.target.value })}
+            >
               <option value="warehouse">На Склад (увеличить остаток)</option>
               <option value="ticket">Тикет (заводская квота)</option>
               <option value="direct">Напрямую клиенту (транзит)</option>
@@ -248,17 +340,67 @@ export function ArrivalsPage() {
           </div>
 
           {formData.destination === 'ticket' && (
-            <Input
-              type="text"
-              label="Номер тикета (квоты)"
-              required
-              placeholder="TKT-2026-001"
-              value={formData.ticket_number}
-              onChange={e => setFormData({ ...formData, ticket_number: e.target.value.toUpperCase() })}
-            />
+            <div className="p-3 rounded-lg border border-border bg-muted/20 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-foreground">Привязка к тикету завода</span>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setTicketSelectionMode('existing')}
+                    className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                      ticketSelectionMode === 'existing' ? 'bg-primary text-white' : 'bg-surface text-steel'
+                    }`}
+                  >
+                    Выбрать из существующих
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTicketSelectionMode('new')}
+                    className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                      ticketSelectionMode === 'new' ? 'bg-primary text-white' : 'bg-surface text-steel'
+                    }`}
+                  >
+                    + Новый номер
+                  </button>
+                </div>
+              </div>
+
+              {ticketSelectionMode === 'existing' ? (
+                <Select
+                  label="Номер активного тикета"
+                  required
+                  value={formData.ticket_number}
+                  onChange={e => setFormData({ ...formData, ticket_number: e.target.value })}
+                >
+                  <option value="">Выберите существующий тикет...</option>
+                  {tickets
+                    .filter(t => !formData.factory_id || t.factory_id === parseInt(formData.factory_id))
+                    .map(t => (
+                      <option key={t.id} value={t.ticket_number}>
+                        {t.ticket_number} • {t.factory_name} (ост: {t.remaining_tonnage} т)
+                      </option>
+                    ))}
+                </Select>
+              ) : (
+                <Input
+                  type="text"
+                  label="Номер нового тикета"
+                  required
+                  placeholder="TKT-2026-001"
+                  value={formData.ticket_number}
+                  onChange={e => setFormData({ ...formData, ticket_number: e.target.value.toUpperCase() })}
+                />
+              )}
+            </div>
           )}
 
-          <Input type="text" label="Комментарий / Накладная" value={formData.comment} onChange={e => setFormData({ ...formData, comment: e.target.value })} />
+          <Input
+            type="text"
+            label="Комментарий"
+            placeholder="Примечание к поставке..."
+            value={formData.comment}
+            onChange={e => setFormData({ ...formData, comment: e.target.value })}
+          />
 
           <div className="flex justify-end gap-2 pt-3 border-t border-border">
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Отмена</Button>

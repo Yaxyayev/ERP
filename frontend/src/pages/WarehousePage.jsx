@@ -213,7 +213,7 @@ export function WarehousePage({ onNavigateToArrivals }) {
         { key: 'name', label: 'Наименование / Марка', render: (v, r) => (
           <div>
             <span className="font-semibold text-foreground block">{v}</span>
-            <span className="text-[10px] text-muted-foreground">{r.cement_grade || 'Стандарт'} • {r.packaging_type === 'bulk' ? 'Навал' : 'Мешки 50кг'}</span>
+            <span className="text-[10px] text-muted-foreground">{r.cement_grade || 'Стандарт'} • {r.packaging_type === 'bulk' ? 'Навал' : 'Мешки'}</span>
           </div>
         )},
         { key: 'factory_name', label: 'Завод-поставщик', render: (v) => <span className="text-muted-foreground">{v || '—'}</span> },
@@ -480,7 +480,7 @@ export function WarehousePage({ onNavigateToArrivals }) {
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
-          <span>Квоты / Тикеты ({tickets.filter(t => t.status === 'active').length})</span>
+          <span>Тикеты ({tickets.filter(t => t.status === 'active').length})</span>
         </button>
         <button
           onClick={() => setViewMode('movements')}

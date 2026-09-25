@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Wallet,
   Plus,
+  Minus,
   Landmark,
   Users,
   CheckCircle2,
@@ -513,19 +514,18 @@ export function FinancePage() {
           <Button
             size="sm"
             onClick={() => setIncomeModal(true)}
-            className="h-7 px-2.5 text-xs font-medium"
+            className="h-7 px-3 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600 border border-emerald-600 flex items-center gap-1 shadow-sm"
           >
-            <Plus className="h-3 w-3 mr-1" />
+            <Plus className="h-3.5 w-3.5" />
             Приход
           </Button>
 
           <Button
             size="sm"
-            variant="outline"
             onClick={() => setExpenseModal(true)}
-            className="h-7 px-2.5 text-xs font-medium border-border"
+            className="h-7 px-3 text-xs font-medium bg-rose-600 hover:bg-rose-700 text-white dark:bg-rose-700 dark:hover:bg-rose-600 border border-rose-600 flex items-center gap-1 shadow-sm"
           >
-            <Plus className="h-3 w-3 mr-1" />
+            <Minus className="h-3.5 w-3.5" />
             Расход
           </Button>
         </div>
@@ -812,6 +812,31 @@ export function FinancePage() {
             </Card>
           )}
 
+          {/* Структура платежных статусов и задолженностей */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-3.5 rounded-lg border border-hairline bg-surface">
+              <span className="text-[11px] font-medium text-steel">Оплачено клиентами</span>
+              <div className="text-base font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                {formatCurrency(summary?.totalIncome || 0)}
+              </div>
+              <span className="text-[10px] text-steel">Фактические поступления в кассу</span>
+            </div>
+            <div className="p-3.5 rounded-lg border border-hairline bg-surface">
+              <span className="text-[11px] font-medium text-steel">В долг (Дебиторская задолженность)</span>
+              <div className="text-base font-semibold text-destructive mt-0.5">
+                {formatCurrency(totalDebt)}
+              </div>
+              <span className="text-[10px] text-steel">Непогашенные отгрузки цемента</span>
+            </div>
+            <div className="p-3.5 rounded-lg border border-hairline bg-surface">
+              <span className="text-[11px] font-medium text-steel">Список должников</span>
+              <div className="text-base font-semibold text-charcoal dark:text-foreground mt-0.5">
+                {debts.length} контрагентов
+              </div>
+              <span className="text-[10px] text-steel">Требуют контроля платежей</span>
+            </div>
+          </div>
+
           {/* Таблица должников (Notion Database Table) */}
           <Card className="border-hairline rounded-lg">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-hairline bg-surface">
@@ -937,7 +962,7 @@ export function FinancePage() {
               <option value="card">Карта</option>
             </Select>
           </div>
-          <Input type="number" step="1" min="1" label="Сумма (сум)" required value={incomeForm.amount} onChange={e => setIncomeForm({ ...incomeForm, amount: e.target.value })} />
+          <Input formatSpaces label="Сумма (сум)" required placeholder="1 000 000" value={incomeForm.amount} onChange={e => setIncomeForm({ ...incomeForm, amount: e.target.value })} />
           <Input type="text" label="Комментарий" value={incomeForm.comment} onChange={e => setIncomeForm({ ...incomeForm, comment: e.target.value })} />
           <div className="flex justify-end gap-2 pt-3 border-t border-border">
             <Button type="button" variant="outline" onClick={() => setIncomeModal(false)}>Отмена</Button>
@@ -975,7 +1000,7 @@ export function FinancePage() {
             )}
           </div>
 
-          <Input type="number" step="1" min="1" label="Сумма (сум)" required value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} />
+          <Input formatSpaces label="Сумма (сум)" required placeholder="500 000" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} />
           <Input type="text" label="Комментарий" value={expenseForm.comment} onChange={e => setExpenseForm({ ...expenseForm, comment: e.target.value })} />
 
           <div className="flex justify-end gap-2 pt-3 border-t border-border">
@@ -994,7 +1019,7 @@ export function FinancePage() {
             <span className="block mt-1 text-destructive font-bold">Текущий долг: {formatCurrency(repayModalClient?.debt_amount || 0)}</span>
           </div>
 
-          <Input type="number" step="1" min="1" max={repayModalClient?.debt_amount} label="Сумма погашения (сум)" required value={repayAmount} onChange={e => setRepayAmount(e.target.value)} />
+          <Input formatSpaces label="Сумма погашения (сум)" required placeholder="1 000 000" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} />
           <Select label="Способ внесения" value={repayMethod} onChange={e => setRepayMethod(e.target.value)}>
             <option value="cash">Наличные в кассу</option>
             <option value="transfer">Банковский перевод</option>

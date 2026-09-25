@@ -18,13 +18,17 @@ function getDashboardSummary(req, res) {
       params.push(endDate);
     }
 
-    // 1. Общий оборот: Цемент vs Логистика
+    // 1. Общий оборот: Цемент vs Логистика, Навал vs Мешки
     const turnoverStats = db.prepare(`
       SELECT 
         COALESCE(SUM(s.cement_amount), 0) as cement_turnover,
         COALESCE(SUM(s.logistics_amount), 0) as logistics_turnover,
         COALESCE(SUM(s.total_amount), 0) as total_turnover,
-        COALESCE(SUM(s.tonnage), 0) as total_cement_tonnage
+        COALESCE(SUM(s.tonnage), 0) as total_cement_tonnage,
+        COALESCE(SUM(CASE WHEN s.packaging_type = 'bulk' THEN s.tonnage ELSE 0 END), 0) as bulk_tonnage,
+        COALESCE(SUM(CASE WHEN s.packaging_type = 'bag' THEN s.tonnage ELSE 0 END), 0) as bag_tonnage,
+        COALESCE(SUM(CASE WHEN s.packaging_type = 'bulk' THEN s.cement_amount ELSE 0 END), 0) as bulk_amount,
+        COALESCE(SUM(CASE WHEN s.packaging_type = 'bag' THEN s.cement_amount ELSE 0 END), 0) as bag_amount
       FROM sales s
       WHERE 1=1 ${dateFilter}
     `).get(...params);
@@ -193,7 +197,11 @@ function getDashboardSummary(req, res) {
         total: turnoverStats.total_turnover,
         cement: turnoverStats.cement_turnover,
         logistics: turnoverStats.logistics_turnover,
-        totalTonnage: turnoverStats.total_cement_tonnage
+        totalTonnage: turnoverStats.total_cement_tonnage,
+        bulkTonnage: turnoverStats.bulk_tonnage,
+        bagTonnage: turnoverStats.bag_tonnage,
+        bulkAmount: turnoverStats.bulk_amount,
+        bagAmount: turnoverStats.bag_amount
       },
       profit: {
         total: cementProfit + logisticsProfit,

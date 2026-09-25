@@ -225,13 +225,23 @@ function getProducts(req, res) {
 
 function createProduct(req, res) {
   try {
-    const {
+    let {
       name, category, cement_grade, packaging_type, unit,
       current_stock, min_stock_alert, purchase_price, selling_price, factory_id
     } = req.body;
 
-    if (!name || !category) {
-      return res.status(400).json({ success: false, error: 'Название и категория товара обязательны' });
+    category = category || 'cement';
+    unit = unit || 'т';
+    packaging_type = packaging_type || 'bulk';
+
+    if (!name) {
+      let facName = '';
+      if (factory_id) {
+        const fac = db.prepare('SELECT name FROM factories WHERE id = ?').get(factory_id);
+        if (fac) facName = fac.name;
+      }
+      const grade = cement_grade ? ` ${cement_grade}` : '';
+      name = `${facName ? facName + ' ' : ''}Цемент${grade}`.trim() || 'Цемент';
     }
 
     const stmt = db.prepare(`
@@ -245,8 +255,8 @@ function createProduct(req, res) {
       name,
       category,
       cement_grade || null,
-      packaging_type || 'none',
-      unit || 'т',
+      packaging_type,
+      unit,
       Number(current_stock) || 0,
       Number(min_stock_alert) || 0,
       Number(purchase_price) || 0,

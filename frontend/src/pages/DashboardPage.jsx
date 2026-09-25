@@ -381,28 +381,72 @@ export function DashboardPage({ onNavigate }) {
   };
 
   const handleMaximizeTurnover = () => {
-    const totalRev = summary?.turnover?.total || 1;
+    const totalRev = summary?.turnover?.total || 0;
     const cementRev = summary?.turnover?.cement || 0;
     const logRev = summary?.turnover?.logistics || 0;
     const bulkTon = summary?.turnover?.bulkTonnage || 0;
     const bagTon = summary?.turnover?.bagTonnage || 0;
     const totalTon = summary?.turnover?.totalTonnage || 0;
+    const bulkAmt = summary?.turnover?.bulkAmount || 0;
+    const bagAmt = summary?.turnover?.bagAmount || 0;
 
     const rows = [
-      { category: 'Цемент навалом (Хопперы / Автоцистерны)', type: 'bulk', tonnage: bulkTon, shareTon: totalTon ? ((bulkTon / totalTon) * 100).toFixed(1) : 0, status: 'Крупнооптовые поставки' },
-      { category: 'Цемент тарированный (Мешки 50 кг)', type: 'bag', tonnage: bagTon, shareTon: totalTon ? ((bagTon / totalTon) * 100).toFixed(1) : 0, status: 'Розничный / Мелкий опт' },
-      { category: 'Логистика и доставка (Автопарк)', type: 'logistics', tonnage: '—', shareTon: '—', revenue: logRev, shareRev: `${logisticsShare}%`, status: 'Собственный и наемный транспорт' }
+      {
+        category: 'Цемент навалом (Хопперы / Автоцистерны)',
+        type: 'Навал',
+        tonnage: bulkTon,
+        shareTon: totalTon ? ((bulkTon / totalTon) * 100).toFixed(1) : '0.0',
+        revenue: bulkAmt,
+        shareRev: totalRev ? ((bulkAmt / totalRev) * 100).toFixed(1) : '0.0',
+        status: 'Крупнооптовые поставки цементовозами'
+      },
+      {
+        category: 'Цемент тарированный (Мешки 50 кг)',
+        type: 'Мешки',
+        tonnage: bagTon,
+        shareTon: totalTon ? ((bagTon / totalTon) * 100).toFixed(1) : '0.0',
+        revenue: bagAmt,
+        shareRev: totalRev ? ((bagAmt / totalRev) * 100).toFixed(1) : '0.0',
+        status: 'Розничный / Мелкий опт на поддонах'
+      },
+      {
+        category: 'ИТОГО ЦЕМЕНТНАЯ ПРОДУКЦИЯ',
+        type: 'Всего цемент',
+        tonnage: totalTon,
+        shareTon: '100.0',
+        revenue: cementRev,
+        shareRev: totalRev ? ((cementRev / totalRev) * 100).toFixed(1) : '0.0',
+        status: 'Все марки и заводы'
+      },
+      {
+        category: 'Логистика и доставка (Транспортный отдел)',
+        type: 'Доставка',
+        tonnage: '—',
+        shareTon: '—',
+        revenue: logRev,
+        shareRev: totalRev ? ((logRev / totalRev) * 100).toFixed(1) : '0.0',
+        status: 'Транспортировка заказчикам'
+      },
+      {
+        category: 'ОБЩИЙ ВАЛОВЫЙ ОБОРОТ (ЦЕМЕНТ + ДОСТАВКА)',
+        type: 'Общий оборот',
+        tonnage: totalTon,
+        shareTon: '100.0',
+        revenue: totalRev,
+        shareRev: '100.0',
+        status: 'Консолидированный оборот компании'
+      }
     ];
 
     setMaximizeModal({
       isOpen: true,
       title: 'Полная структура товарооборота и направлений',
-      subtitle: 'Комплексный анализ выручки по цементу, логистике, навальной и фасованной продукции',
+      subtitle: 'Комплексный анализ объема продаж, выручки по фасовке (навал/мешки) и транспортным услугам',
       stats: [
-        { label: 'Совокупный оборот', value: formatCurrency(totalRev), color: 'text-foreground', desc: '100% выручки' },
-        { label: 'Цементная выручка', value: formatCurrency(cementRev), color: 'text-amber-500', desc: `${cementShare}% от оборота` },
-        { label: 'Транспортные услуги', value: formatCurrency(logRev), color: 'text-blue-500', desc: `${logisticsShare}% от оборота` },
-        { label: 'Соотношение Навал/Мешок', value: `${formatNumber(bulkTon)} / ${formatNumber(bagTon)} т`, color: 'text-indigo-500', desc: 'Структура фасовки' }
+        { label: 'Совокупный оборот', value: formatCurrency(totalRev), color: 'text-foreground', desc: '100% выручки компании' },
+        { label: 'Цементная выручка', value: formatCurrency(cementRev), color: 'text-amber-500', desc: `${cementShare}% от общего оборота` },
+        { label: 'Транспортные услуги', value: formatCurrency(logRev), color: 'text-blue-500', desc: `${logisticsShare}% от общего оборота` },
+        { label: 'Соотношение Навал / Мешок', value: `${formatNumber(bulkTon)} / ${formatNumber(bagTon)} т`, color: 'text-indigo-500', desc: `Всего: ${formatNumber(totalTon)} т` }
       ],
       renderChart: () => (
         <ResponsiveContainer width="100%" height="100%">
@@ -431,9 +475,11 @@ export function DashboardPage({ onNavigate }) {
       ),
       tableData: rows,
       columns: [
-        { key: 'category', label: 'Категория оборота', render: (v) => <span className="font-semibold text-foreground">{v}</span> },
+        { key: 'category', label: 'Направление оборота', render: (v) => <span className="font-semibold text-foreground">{v}</span> },
         { key: 'tonnage', label: 'Тоннаж', align: 'right', render: (v) => v !== '—' ? `${formatNumber(v)} т` : '—' },
-        { key: 'shareTon', label: 'Доля в тоннаже', align: 'right', render: (v) => v !== '—' ? `${v}%` : '—' },
+        { key: 'shareTon', label: 'Доля в объеме', align: 'right', render: (v) => v !== '—' ? <Badge variant="lavender">{v}%</Badge> : '—' },
+        { key: 'revenue', label: 'Выручка (сум)', align: 'right', render: (v) => <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">{formatCurrency(v)}</span> },
+        { key: 'shareRev', label: 'Доля в выручке', align: 'right', render: (v) => <Badge variant="mint">{v}%</Badge> },
         { key: 'status', label: 'Примечание / Сегмент', render: (v) => <span className="text-muted-foreground">{v}</span> }
       ]
     });
@@ -467,7 +513,7 @@ export function DashboardPage({ onNavigate }) {
                 itemStyle={chartTheme.tooltipItemStyle}
                 labelStyle={chartTheme.tooltipLabelStyle}
               />
-              <Legend verticalAlign="top" align="right" height={36} formatter={(v) => v === 'bulk' ? 'Навал (Оранжевый)' : 'Мешки (Индиго)'} />
+              <Legend verticalAlign="top" align="right" height={36} formatter={(v) => v === 'bulk' ? 'Навал' : 'Мешки'} />
               <Bar dataKey="bulk" name="bulk" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
               <Bar dataKey="bag" name="bag" stackId="a" fill="#6366f1" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -1014,7 +1060,7 @@ export function DashboardPage({ onNavigate }) {
                             verticalAlign="top"
                             align="right"
                             height={24}
-                            formatter={(v) => (v === 'bulk' ? 'Навал (Оранжевый)' : 'Мешки (Индиго)')}
+                            formatter={(v) => (v === 'bulk' ? 'Навал' : 'Мешки')}
                           />
                           <Bar dataKey="bulk" name="bulk" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
                           <Bar dataKey="bag" name="bag" stackId="a" fill="#6366f1" radius={[6, 6, 0, 0]} />

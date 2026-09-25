@@ -156,11 +156,14 @@ export function SalesPage() {
   const selectedProduct = products.find(p => p.id === parseInt(formData.product_id));
   const selectedTicket = tickets.find(t => t.id === parseInt(formData.ticket_id));
 
+  const factoryTickets = tickets.filter(t => !formData.factory_id || t.factory_id === parseInt(formData.factory_id));
+  const factoryRemainingTonnage = factoryTickets.reduce((acc, t) => acc + (parseFloat(t.remaining_tonnage) || 0), 0);
+
   const availableStock = formData.warehouse_source === 'warehouse'
     ? (selectedProduct?.current_stock || 0)
     : formData.warehouse_source === 'ticket'
       ? (selectedTicket?.remaining_tonnage || 0)
-      : 999999;
+      : factoryRemainingTonnage;
 
   const requestedTonnage = parseFloat(formData.tonnage) || 0;
   const isStockInsufficient = formData.warehouse_source !== 'direct' && requestedTonnage > availableStock;
@@ -183,6 +186,22 @@ export function SalesPage() {
     }));
   }, [formData.tonnage, formData.price_per_ton, formData.delivery_type, formData.logistics_rate_per_ton, formData.payment_status, saleType]);
 
+  const handleTicketSelect = (ticketId) => {
+    const t = tickets.find(tick => tick.id === parseInt(ticketId));
+    if (t) {
+      setFormData(prev => ({
+        ...prev,
+        ticket_id: ticketId,
+        factory_id: t.factory_id ? t.factory_id.toString() : prev.factory_id,
+        product_id: t.product_id ? t.product_id.toString() : prev.product_id,
+        packaging_type: t.packaging_type || prev.packaging_type,
+        price_per_ton: t.price_per_ton ? t.price_per_ton.toString() : prev.price_per_ton
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, ticket_id: '' }));
+    }
+  };
+
   const handleProductSelect = (prodId) => {
     const p = products.find(prod => prod.id === parseInt(prodId));
     setFormData(prev => ({
@@ -194,13 +213,23 @@ export function SalesPage() {
     }));
   };
 
+  const handleDeliveryTypeChange = (type) => {
+    setFormData(prev => ({
+      ...prev,
+      delivery_type: type,
+      vehicle_id: type === 'pickup' ? '' : prev.vehicle_id,
+      vehicle_number: type === 'pickup' ? '' : prev.vehicle_number,
+      logistics_rate_per_ton: type === 'pickup' ? '0' : prev.logistics_rate_per_ton
+    }));
+  };
+
   const handleVehicleSelect = (vehId) => {
     const v = vehicles.find(veh => veh.id === parseInt(vehId));
     setFormData(prev => ({
       ...prev,
       vehicle_id: vehId,
       vehicle_number: v?.plate_number || '',
-      is_company_vehicle: v ? v.is_company_owned : 1
+      is_company_vehicle: 1
     }));
   };
 
@@ -212,6 +241,15 @@ export function SalesPage() {
 
       if (isStockInsufficient) {
         throw new Error(`Недостаточно остатка на складе! Доступно: ${availableStock} т, запрошено: ${requestedTonnage} т.`);
+      }
+
+      if (formData.delivery_type === 'delivery') {
+        if (!formData.vehicle_id && !formData.vehicle_number) {
+          throw new Error('При выборе доставки автопарком необходимо указать машину');
+        }
+        if (!formData.logistics_rate_per_ton || parseFloat(formData.logistics_rate_per_ton) <= 0) {
+          throw new Error('Укажите стоимость (тариф) доставки за тонну');
+        }
       }
 
       await api.createSale({
@@ -860,9 +898,17 @@ export function SalesPage() {
                 <Select
                   label="Завод"
                   value={formData.factory_id}
-                  onChange={(e) => setFormData({ ...formData, factory_id: e.target.value })}
+                  onChange={(e) => {
+                    const facId = e.target.value;
+                    setFormData(prev => ({
+                      ...prev,
+                      factory_id: facId,
+                      // Если выбран тикет не от этого завода - сбросить
+                      ticket_id: prev.ticket_id && tickets.find(t => t.id === parseInt(prev.ticket_id))?.factory_id !== parseInt(facId) ? '' : prev.ticket_id
+                    }));
+                  }}
                 >
-                  <option value="">Выберите завод...</option>
+                  <option value="">Все заводы / Склад...</option>
                   {factories.map((f) => (
                     <option key={f.id} value={f.id}>{f.name}</option>
                   ))}
@@ -873,8 +919,8 @@ export function SalesPage() {
                   value={formData.packaging_type}
                   onChange={(e) => setFormData({ ...formData, packaging_type: e.target.value })}
                 >
-                  <option value="bulk">Навал (россыпь)</option>
-                  <option value="bag">Мешок (50кг)</option>
+                  <option value="bulk">Навал</option>
+                  <option value="bag">Мешки</option>
                 </Select>
               </div>
 
@@ -885,43 +931,57 @@ export function SalesPage() {
                   onChange={(e) => setFormData({ ...formData, warehouse_source: e.target.value })}
                 >
                   <option value="warehouse">Фактический склад</option>
-                  <option value="ticket">Заводской тикет (квота)</option>
-                  <option value="direct">Напрямую с завода</option>
+                  <option value="ticket">Тикет завода</option>
+                  <option value="direct">Напрямую с завода (транзит)</option>
                 </Select>
 
                 {formData.warehouse_source === 'ticket' && (
                   <Select
-                    label="Выбор активного тикета"
+                    label="Выбор тикета"
                     required
                     value={formData.ticket_id}
-                    onChange={(e) => setFormData({ ...formData, ticket_id: e.target.value })}
+                    onChange={(e) => handleTicketSelect(e.target.value)}
                   >
                     <option value="">Выберите тикет...</option>
-                    {tickets.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.ticket_number} — {t.factory_name} (ост: {t.remaining_tonnage} т)
-                      </option>
-                    ))}
+                    {tickets
+                      .filter(t => !formData.factory_id || t.factory_id === parseInt(formData.factory_id))
+                      .map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.ticket_number} • {t.factory_name} (ост: {t.remaining_tonnage} т)
+                        </option>
+                      ))}
                   </Select>
+                )}
+
+                {formData.warehouse_source === 'direct' && (
+                  <div className="p-2.5 rounded-md bg-tint-sky/50 border border-brand-navy/15 text-foreground text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <div>
+                      <span className="font-semibold text-brand-navy dark:text-sky-300">Прямой транзит: </span>
+                      <span className="text-steel">Отгрузка напрямую покупателю</span>
+                    </div>
+                    <div className="font-medium text-foreground">
+                      Остаток по заводу: <strong className="text-primary">{formatNumber(factoryRemainingTonnage)} т</strong>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Защита от нехватки товара */}
-              {formData.warehouse_source !== 'direct' && (
-                <div
-                  className={`flex items-center justify-between p-2.5 rounded-md text-xs font-medium ${
-                    isStockInsufficient
-                      ? 'bg-destructive/10 border border-destructive/30 text-destructive'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  <span>
-                    {isStockInsufficient
+              {/* Защита от нехватки товара и отображение остатка */}
+              <div
+                className={`flex items-center justify-between p-2.5 rounded-md text-xs font-medium ${
+                  formData.warehouse_source !== 'direct' && isStockInsufficient
+                    ? 'bg-destructive/10 border border-destructive/30 text-destructive'
+                    : 'bg-surface border border-hairline text-foreground'
+                }`}
+              >
+                <span>
+                  {formData.warehouse_source === 'direct'
+                    ? `Доступный остаток квот завода: ${formatNumber(factoryRemainingTonnage)} т (прямой транзит с завода)`
+                    : isStockInsufficient
                       ? `ОТГРУЗКА ЗАБЛОКИРОВАНА: в наличии ${availableStock} т, а запрошено ${requestedTonnage} т!`
                       : `Доступный остаток для отгрузки: ${availableStock} т`}
-                  </span>
-                </div>
-              )}
+                </span>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Input
@@ -935,11 +995,11 @@ export function SalesPage() {
                   onChange={(e) => setFormData({ ...formData, tonnage: e.target.value })}
                 />
                 <Input
-                  type="number"
-                  step="1"
-                  min="0"
+                  type="text"
                   label="Цена за тонну"
                   required
+                  formatSpaces={true}
+                  placeholder="850 000"
                   value={formData.price_per_ton}
                   onChange={(e) => setFormData({ ...formData, price_per_ton: e.target.value })}
                 />
@@ -954,58 +1014,85 @@ export function SalesPage() {
             </div>
           )}
 
-          {/* Логистика */}
+          {/* Логистика (Дополнительная услуга: Самовывоз или Автопарк) */}
           <div className="space-y-3 rounded-lg border border-border p-3.5 bg-muted/20">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Select
-                label="Способ отгрузки"
-                value={formData.delivery_type}
-                onChange={(e) => setFormData({ ...formData, delivery_type: e.target.value })}
-              >
-                <option value="pickup">Самовывоз клиентом</option>
-                <option value="delivery">Доставка автотранспортом</option>
-              </Select>
-
-              <Select
-                label="Транспорт"
-                value={formData.vehicle_id}
-                onChange={(e) => handleVehicleSelect(e.target.value)}
-              >
-                <option value="">Выберите машину...</option>
-                {vehicles.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.plate_number} ({v.is_company_owned ? 'Своя' : 'Наёмная'})
-                  </option>
-                ))}
-              </Select>
-
-              <Input
-                type="text"
-                label="Гос. номер (вручную)"
-                placeholder="01 A 777 AA"
-                value={formData.vehicle_number}
-                onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
-              />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-foreground">Доставка и логистика</span>
+              <div className="inline-flex rounded-md border border-hairline bg-surface p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => handleDeliveryTypeChange('pickup')}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                    formData.delivery_type === 'pickup'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-steel hover:text-foreground'
+                  }`}
+                >
+                  Самовывоз клиентом
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeliveryTypeChange('delivery')}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                    formData.delivery_type === 'delivery'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-steel hover:text-foreground'
+                  }`}
+                >
+                  Доставка автопарком
+                </button>
+              </div>
             </div>
 
-            {formData.delivery_type === 'delivery' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <Input
-                  type="number"
-                  step="1"
-                  min="0"
-                  label="Тариф логистики за тонну"
-                  placeholder="70000"
-                  value={formData.logistics_rate_per_ton}
-                  onChange={(e) => setFormData({ ...formData, logistics_rate_per_ton: e.target.value })}
-                />
+            {formData.delivery_type === 'pickup' ? (
+              <div className="p-3 rounded-lg bg-surface border border-hairline space-y-2">
+                <div className="text-xs text-steel">
+                  Клиент забирает продукцию своим транспортом. Логистические услуги компании не оплачиваются.
+                </div>
                 <Input
                   type="text"
-                  label="Стоимость доставки"
-                  readOnly
-                  value={formatCurrency(formData.logistics_amount)}
-                  className="bg-muted font-semibold"
+                  label="Гос. номер машины клиента (для ТТН / пропуска)"
+                  placeholder="01 A 777 AA"
+                  value={formData.vehicle_number}
+                  onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
                 />
+              </div>
+            ) : (
+              <div className="p-3 rounded-lg bg-surface border border-hairline space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Select
+                    label="Машина из автопарка"
+                    required
+                    value={formData.vehicle_id}
+                    onChange={(e) => handleVehicleSelect(e.target.value)}
+                  >
+                    <option value="">Выберите машину автопарка...</option>
+                    {vehicles.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.plate_number} — {v.model || 'Тягач'} {v.driver_name ? `(${v.driver_name})` : ''}
+                      </option>
+                    ))}
+                  </Select>
+
+                  <Input
+                    type="text"
+                    label="Тариф доставки за тонну"
+                    required
+                    formatSpaces={true}
+                    placeholder="70 000"
+                    value={formData.logistics_rate_per_ton}
+                    onChange={(e) => setFormData({ ...formData, logistics_rate_per_ton: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-1 border-t border-hairline text-xs">
+                  <span className="text-steel">
+                    Стоимость логистики ({formData.tonnage || 0} т × {formatThousands(formData.logistics_rate_per_ton || 0)} сум):
+                  </span>
+                  <span className="font-bold text-foreground">
+                    {formatCurrency(formData.logistics_amount)}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -1013,7 +1100,12 @@ export function SalesPage() {
           {/* Итоги и оплата */}
           <div className="rounded-lg border border-border p-3.5 space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-border">
-              <span className="text-xs font-medium text-muted-foreground">Итоговая стоимость сделки:</span>
+              <div>
+                <span className="text-xs font-medium text-muted-foreground block">Итоговая стоимость сделки:</span>
+                <span className="text-[11px] text-steel">
+                  Цемент: {formatCurrency(formData.cement_amount)} • Логистика: {formatCurrency(formData.logistics_amount)}
+                </span>
+              </div>
               <span className="text-lg font-bold text-foreground">
                 {formatCurrency(formData.total_amount)}
               </span>
@@ -1031,10 +1123,10 @@ export function SalesPage() {
               </Select>
 
               <Input
-                type="number"
-                step="1"
-                min="0"
+                type="text"
                 label="Сумма оплаты сейчас"
+                formatSpaces={true}
+                placeholder="0"
                 value={formData.paid_amount}
                 onChange={(e) => setFormData({ ...formData, paid_amount: e.target.value })}
               />

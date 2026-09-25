@@ -149,11 +149,11 @@ export function ChartMaximizeModal({
                 variant="outline"
                 size="sm"
                 onClick={handleExport}
-                className="h-7 px-2.5 text-xs hidden sm:inline-flex"
-                title="Экспортировать в CSV"
+                className="h-7 px-3 text-xs font-medium text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/40 inline-flex items-center gap-1.5"
+                title="Экспортировать ведомость в Excel (CSV с поддержкой кириллицы)"
               >
-                <Download className="h-3.5 w-3.5 mr-1" />
-                CSV
+                <Download className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Экспорт в Excel</span>
               </Button>
             )}
 

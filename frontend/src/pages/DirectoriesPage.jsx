@@ -108,8 +108,21 @@ export function DirectoriesPage() {
         if (modalMode === 'create') await api.createVehicle(formData);
         else await api.updateVehicle(editingItem.id, formData);
       } else if (activeTab === 'products') {
-        if (modalMode === 'create') await api.createProduct(formData);
-        else await api.updateProduct(editingItem.id, formData);
+        const fac = factories.find(f => f.id == formData.factory_id);
+        const facName = fac ? fac.name : '';
+        const grade = formData.cement_grade || 'М400';
+        const finalData = {
+          ...formData,
+          name: formData.name || `${facName ? facName + ' ' : ''}Цемент ${grade}`.trim(),
+          category: formData.category || 'cement',
+          cement_grade: grade,
+          unit: formData.unit || 'т',
+          packaging_type: formData.packaging_type || 'bulk',
+          purchase_price: Number(formData.purchase_price) || 0,
+          selling_price: Number(formData.selling_price) || 0
+        };
+        if (modalMode === 'create') await api.createProduct(finalData);
+        else await api.updateProduct(editingItem.id, finalData);
       }
 
       setFeedback({ type: 'success', message: 'Данные справочника успешно сохранены!' });
@@ -262,7 +275,6 @@ export function DirectoriesPage() {
                   <tr className="border-b border-hairline bg-surface text-steel font-medium">
                     <th className="py-2.5 px-4">Гос. номер</th>
                     <th className="py-2.5 px-3">Модель</th>
-                    <th className="py-2.5 px-3">Тип</th>
                     <th className="py-2.5 px-3">Водитель</th>
                     <th className="py-2.5 px-3">Телефон</th>
                     <th className="py-2.5 px-4 text-center">Действия</th>
@@ -273,9 +285,6 @@ export function DirectoriesPage() {
                     <tr key={v.id} className="hover:bg-surface/60 transition-colors">
                       <td className="py-2.5 px-4 font-mono font-semibold text-foreground">{v.plate_number}</td>
                       <td className="py-2.5 px-3 text-steel">{v.model || '—'}</td>
-                      <td className="py-2.5 px-3">
-                        {v.is_company_owned ? <Badge variant="mint">Собственная</Badge> : <Badge variant="sky">Наёмная</Badge>}
-                      </td>
                       <td className="py-2.5 px-3 font-medium text-foreground">{v.driver_name || '—'}</td>
                       <td className="py-2.5 px-3 text-steel">{v.driver_phone || '—'}</td>
                       <td className="py-2.5 px-4 text-center">
@@ -414,10 +423,6 @@ export function DirectoriesPage() {
             <>
               <Input label="Гос. номер" required placeholder="01 A 777 AA" value={formData.plate_number || ''} onChange={e => setFormData({ ...formData, plate_number: e.target.value.toUpperCase() })} />
               <Input label="Марка / Модель" placeholder="HOWO / MAN" value={formData.model || ''} onChange={e => setFormData({ ...formData, model: e.target.value })} />
-              <Select label="Принадлежность" value={formData.is_company_owned} onChange={e => setFormData({ ...formData, is_company_owned: parseInt(e.target.value) })}>
-                <option value="1">Собственный транспорт компании</option>
-                <option value="0">Наёмный транспорт перевозчика</option>
-              </Select>
               <Input label="Водитель" value={formData.driver_name || ''} onChange={e => setFormData({ ...formData, driver_name: e.target.value })} />
               <Input label="Телефон водителя" value={formData.driver_phone || ''} onChange={e => setFormData({ ...formData, driver_phone: e.target.value })} />
             </>
@@ -434,31 +439,24 @@ export function DirectoriesPage() {
 
           {activeTab === 'products' && (
             <>
-              <Input label="Наименование" required value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-              <div className="grid grid-cols-2 gap-4">
-                <Select label="Категория" value={formData.category || 'cement'} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                  <option value="cement">Цемент</option>
-                  <option value="packaging">Тара (мешки)</option>
-                  <option value="additive">Добавки</option>
-                </Select>
-                <Input label="Марка цемента" placeholder="M400, M500" value={formData.cement_grade || ''} onChange={e => setFormData({ ...formData, cement_grade: e.target.value })} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Select label="Фасовка" value={formData.packaging_type || 'bulk'} onChange={e => setFormData({ ...formData, packaging_type: e.target.value })}>
-                  <option value="bulk">Навал</option>
-                  <option value="bag">Мешок</option>
-                  <option value="none">Без фасовки</option>
-                </Select>
-                <Input label="Единица измерения" value={formData.unit || 'т'} onChange={e => setFormData({ ...formData, unit: e.target.value })} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Input type="number" label="Цена закупки (сум)" value={formData.purchase_price || ''} onChange={e => setFormData({ ...formData, purchase_price: e.target.value })} />
-                <Input type="number" label="Цена продажи (сум)" value={formData.selling_price || ''} onChange={e => setFormData({ ...formData, selling_price: e.target.value })} />
-              </div>
-              <Select label="Завод" value={formData.factory_id || ''} onChange={e => setFormData({ ...formData, factory_id: e.target.value })}>
-                <option value="">Без завода...</option>
-                {factories.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+              <Select
+                label="Завод-производитель"
+                required
+                value={formData.factory_id || ''}
+                onChange={e => setFormData({ ...formData, factory_id: e.target.value })}
+              >
+                <option value="">Выберите завод...</option>
+                {factories.map(f => (
+                  <option key={f.id} value={f.id}>{f.name}</option>
+                ))}
               </Select>
+              <Input
+                label="Марка цемента"
+                required
+                placeholder="Например: М400, М500, М600"
+                value={formData.cement_grade || ''}
+                onChange={e => setFormData({ ...formData, cement_grade: e.target.value })}
+              />
             </>
           )}
 
