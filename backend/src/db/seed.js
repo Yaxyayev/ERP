@@ -3,6 +3,11 @@ const { db } = require('../config/database');
 function seedDatabase() {
   console.log('--- Наполнение базы данных первоначальными данными (Seed) ---');
 
+  if (!process.argv.includes('--force') && process.env.FORCE_SEED !== 'true') {
+    console.log('Предотвращено: seedDatabase заблокирован для защиты чистой рабочей базы данных. Для запуска используйте: node src/db/seed.js --force');
+    return;
+  }
+
   const checkFactory = db.prepare('SELECT count(*) as count FROM factories').get();
   if (checkFactory.count > 0) {
     console.log('База данных уже содержит данные, пропускаем seed.');

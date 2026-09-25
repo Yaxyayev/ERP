@@ -27,7 +27,7 @@ function initSchema() {
     db.exec(schemaSql);
   }
 
-  // Проверяем наличие пользователей, при отсутствии создаем администратора и персонал
+  // Проверяем наличие пользователей, при отсутствии создаем учетную запись администратора
   try {
     const userCount = db.prepare('SELECT count(*) as count FROM users').get();
     if (userCount.count === 0) {
@@ -36,17 +36,15 @@ function initSchema() {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
 
-      insertUser.run('admin', 'admin2026!', 'Рустам Исмаилов', 'admin', 'Главный Администратор', '+998 90 123-45-67', 'active');
-      insertUser.run('operator', 'operator123', 'Сардор Назаров', 'operator', 'Оператор склада и отгрузок', '+998 91 234-56-78', 'active');
-      insertUser.run('accountant', 'accountant123', 'Дильноза Каримова', 'accountant', 'Главный Бухгалтер', '+998 93 345-67-89', 'active');
+      insertUser.run('admin', 'admin2026!', 'Главный Администратор', 'admin', 'Главный Администратор', '+998 90 000-00-00', 'active');
 
       // Начальная запись в журнал аудита
       db.prepare(`
         INSERT INTO audit_logs (username, action, entity, details, ip)
         VALUES (?, ?, ?, ?, ?)
-      `).run('admin', 'SYSTEM_INIT', 'База данных', 'Инициализация коммерческой сборки ERP Цемент и создание учетных записей', '127.0.0.1');
+      `).run('admin', 'SYSTEM_INIT', 'База данных', 'Инициализация чистой рабочей базы ERP Цемент. Учетная запись администратора активирована.', '127.0.0.1');
 
-      console.log('Пользователи успешно инициализированы: admin / admin2026!');
+      console.log('Пользователь успешно инициализирован: admin / admin2026!');
     }
   } catch (err) {
     console.error('Ошибка инициализации пользователей:', err.message);

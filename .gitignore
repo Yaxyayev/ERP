@@ -21,6 +21,7 @@ backend/data/*.sqlite-wal
 backend/data/*.sqlite-shm
 backend/data/*.sqlite-journal
 backend/data/backup_*.sqlite
+backend/data/*backup*.sqlite
 
 # IDE & OS files
 .DS_Store
