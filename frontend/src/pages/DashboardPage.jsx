@@ -162,9 +162,7 @@ export function DashboardPage({ onNavigate }) {
   }));
 
   // Данные таймлайна отгрузок
-  const timelineData = summary?.salesTimeline?.length > 0 ? summary.salesTimeline : [
-    { date: '2026-09-22', tonnage: summary?.turnover?.totalTonnage || 0, total_amount: summary?.turnover?.total || 0 }
-  ];
+  const timelineData = summary?.salesTimeline || [];
 
   // ==================== DRILLDOWN ОБРАБОТЧИКИ ====================
   const salesColumns = [
@@ -339,7 +337,7 @@ export function DashboardPage({ onNavigate }) {
       stats: [
         { label: 'Общая выручка', value: formatCurrency(totalRev), color: 'text-emerald-500', desc: 'Суммарный объем продаж' },
         { label: 'Отгруженный тоннаж', value: `${formatNumber(totalTon)} т`, color: 'text-amber-500', desc: 'Суммарный вес цемента' },
-        { label: 'Пиковый день', value: formatDate(peakDay.date), color: 'text-primary', desc: `${formatCurrency(peakDay.total_amount)} (${formatNumber(peakDay.tonnage)} т)` },
+        { label: 'Пиковый день', value: peakDay.date && peakDay.date !== '—' ? formatDate(peakDay.date) : '—', color: 'text-primary', desc: peakDay.total_amount > 0 ? `${formatCurrency(peakDay.total_amount)} (${formatNumber(peakDay.tonnage)} т)` : 'Нет отгрузок' },
         { label: 'Среднедневно', value: formatCurrency(avgDailyRev), color: 'text-foreground', desc: `~${avgDailyTon} тонн в сутки` }
       ],
       renderChart: () => (
@@ -389,6 +387,9 @@ export function DashboardPage({ onNavigate }) {
     const totalTon = summary?.turnover?.totalTonnage || 0;
     const bulkAmt = summary?.turnover?.bulkAmount || 0;
     const bagAmt = summary?.turnover?.bagAmount || 0;
+
+    const cShare = totalRev > 0 ? Math.round((cementRev / totalRev) * 100) : 0;
+    const lShare = totalRev > 0 ? Math.round((logRev / totalRev) * 100) : 0;
 
     const rows = [
       {
@@ -444,8 +445,8 @@ export function DashboardPage({ onNavigate }) {
       subtitle: 'Комплексный анализ объема продаж, выручки по фасовке (навал/мешки) и транспортным услугам',
       stats: [
         { label: 'Совокупный оборот', value: formatCurrency(totalRev), color: 'text-foreground', desc: '100% выручки компании' },
-        { label: 'Цементная выручка', value: formatCurrency(cementRev), color: 'text-amber-500', desc: `${cementShare}% от общего оборота` },
-        { label: 'Транспортные услуги', value: formatCurrency(logRev), color: 'text-blue-500', desc: `${logisticsShare}% от общего оборота` },
+        { label: 'Цементная выручка', value: formatCurrency(cementRev), color: 'text-amber-500', desc: `${cShare}% от общего оборота` },
+        { label: 'Транспортные услуги', value: formatCurrency(logRev), color: 'text-blue-500', desc: `${lShare}% от общего оборота` },
         { label: 'Соотношение Навал / Мешок', value: `${formatNumber(bulkTon)} / ${formatNumber(bagTon)} т`, color: 'text-indigo-500', desc: `Всего: ${formatNumber(totalTon)} т` }
       ],
       renderChart: () => (
@@ -490,16 +491,17 @@ export function DashboardPage({ onNavigate }) {
       const totalFacTon = cementFactoryData.reduce((acc, f) => acc + (f.total || 0), 0);
       const totalFacAmount = cementFactoryData.reduce((acc, f) => acc + (f.amount || 0), 0);
       const topFac = [...cementFactoryData].sort((a, b) => (b.total || 0) - (a.total || 0))[0] || { name: '—', total: 0 };
+      const facWord = cementFactoryData.length === 1 ? 'завод' : (cementFactoryData.length >= 2 && cementFactoryData.length <= 4 ? 'завода' : 'заводов');
 
       setMaximizeModal({
         isOpen: true,
         title: 'Аналитика отгрузок по заводам-производителям',
         subtitle: 'Полное распределение объемов навала и тары по каждому партнерскому цементному заводу',
         stats: [
-          { label: 'Всего заводов', value: `${cementFactoryData.length} завода`, color: 'text-foreground', desc: 'Активные поставщики' },
+          { label: 'Всего заводов', value: `${cementFactoryData.length} ${facWord}`, color: 'text-foreground', desc: 'Активные поставщики' },
           { label: 'Общий тоннаж', value: `${formatNumber(totalFacTon)} т`, color: 'text-amber-500', desc: 'Совокупный объем' },
           { label: 'Выручка по заводам', value: formatCurrency(totalFacAmount), color: 'text-emerald-500', desc: 'Суммарные продажи' },
-          { label: 'Лидер поставок', value: topFac.name, color: 'text-primary', desc: `${formatNumber(topFac.total)} т` }
+          { label: 'Лидер поставок', value: topFac.name, color: 'text-primary', desc: topFac.total > 0 ? `${formatNumber(topFac.total)} т` : 'Нет поставок' }
         ],
         renderChart: () => (
           <ResponsiveContainer width="100%" height="100%">
@@ -537,16 +539,17 @@ export function DashboardPage({ onNavigate }) {
       const totalVehRev = logisticsVehicleData.reduce((acc, v) => acc + (v.revenue || 0), 0);
       const totalTrips = logisticsVehicleData.reduce((acc, v) => acc + (v.trips || 0), 0);
       const topVeh = [...logisticsVehicleData].sort((a, b) => (b.revenue || 0) - (a.revenue || 0))[0] || { name: '—', revenue: 0 };
+      const vehWord = logisticsVehicleData.length === 1 ? 'машина' : (logisticsVehicleData.length >= 2 && logisticsVehicleData.length <= 4 ? 'машины' : 'машин');
 
       setMaximizeModal({
         isOpen: true,
         title: 'Эффективность и выручка автопарка',
         subtitle: 'Статистика рейсов, перевозок и транспортной выручки по тягачам и цементовозам',
         stats: [
-          { label: 'Транспортных средств', value: `${logisticsVehicleData.length} ед.`, color: 'text-foreground', desc: 'Автопарк' },
+          { label: 'Транспортных средств', value: `${logisticsVehicleData.length} ${vehWord}`, color: 'text-foreground', desc: 'Автопарк' },
           { label: 'Совокупная выручка', value: formatCurrency(totalVehRev), color: 'text-blue-500', desc: 'Доставка' },
           { label: 'Всего перевезено', value: `${formatNumber(totalVehTon)} т`, color: 'text-amber-500', desc: 'Масса груза' },
-          { label: 'Всего рейсов', value: `${totalTrips} рейсов`, color: 'text-primary', desc: `Лидер: ${topVeh.name}` }
+          { label: 'Всего рейсов', value: `${totalTrips} рейсов`, color: 'text-primary', desc: topVeh.revenue > 0 ? `Лидер: ${topVeh.name}` : 'Нет рейсов' }
         ],
         renderChart: () => (
           <ResponsiveContainer width="100%" height="100%">

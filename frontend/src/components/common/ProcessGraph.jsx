@@ -22,16 +22,31 @@ import { formatCurrency, formatNumber } from '../../lib/utils';
 export function ProcessGraph({ pipelineStats, turnover, profit, debts, onNavigate }) {
   const [selectedNode, setSelectedNode] = useState('tickets');
 
+  const facCount = pipelineStats?.factories ?? 0;
+  const facWord = facCount === 1 ? 'завод' : (facCount >= 2 && facCount <= 4 ? 'завода' : 'заводов');
+
+  const ticketsCount = pipelineStats?.tickets?.count ?? 0;
+  const ticketsWord = ticketsCount === 1 ? 'квота' : (ticketsCount >= 2 && ticketsCount <= 4 ? 'квоты' : 'квот');
+
+  const fleetCount = pipelineStats?.fleet?.count ?? 0;
+  const fleetWord = fleetCount === 1 ? 'машина' : (fleetCount >= 2 && fleetCount <= 4 ? 'машины' : 'машин');
+
+  const clientCount = pipelineStats?.clients ?? 0;
+  const clientWord = clientCount === 1 ? 'клиент' : (clientCount >= 2 && clientCount <= 4 ? 'клиента' : 'клиентов');
+
+  const debtorsCount = debts?.debtorsCount ?? 0;
+  const debtorsWord = debtorsCount === 1 ? 'должник' : (debtorsCount >= 2 && debtorsCount <= 4 ? 'должника' : 'должников');
+
   const nodes = [
     {
       id: 'factories',
       title: '1. Заводы',
       icon: Factory,
-      metric: `${pipelineStats?.factories || 3} завода`,
+      metric: `${facCount} ${facWord}`,
       submetric: 'Поставщики цемента',
       badge: 'Сырье',
       badgeVariant: 'outline',
-      description: 'Кызылкумцемент, Навоийазот, Бекабадцемент. Первичные поставки по биржевым контрактам.'
+      description: 'Заводы-производители цемента. Регистрация контрактов и первичные закупки по биржевым квотам.'
     },
     {
       id: 'tickets',
@@ -39,8 +54,8 @@ export function ProcessGraph({ pipelineStats, turnover, profit, debts, onNavigat
       icon: Ticket,
       metric: `${formatNumber(pipelineStats?.tickets?.remaining_tonnage || 0)} т`,
       submetric: formatCurrency(pipelineStats?.tickets?.remaining_amount || 0),
-      badge: `${pipelineStats?.tickets?.count || 0} квот`,
-      badgeVariant: 'secondary',
+      badge: `${ticketsCount} ${ticketsWord}`,
+      badgeVariant: 'peach',
       description: 'Электронные тикеты с завода. Списание квот при отгрузках. Возврат неиспользованных тикетов на брокерский счет.'
     },
     {
@@ -50,17 +65,17 @@ export function ProcessGraph({ pipelineStats, turnover, profit, debts, onNavigat
       metric: `${formatNumber(pipelineStats?.warehouse?.total_cement_stock || 0)} т`,
       submetric: `Навал: ${formatNumber(pipelineStats?.warehouse?.bulk_stock || 0)}т • Мешки: ${formatNumber(pipelineStats?.warehouse?.bag_stock || 0)}т`,
       badge: 'Остаток',
-      badgeVariant: 'outline',
+      badgeVariant: 'mint',
       description: 'Фактический склад цемента, мешков и добавок. Автоматическая блокировка отгрузок при нехватке остатков.'
     },
     {
       id: 'logistics',
       title: '4. Автопарк',
       icon: Truck,
-      metric: `${pipelineStats?.fleet?.count || 0} машины`,
+      metric: `${fleetCount} ${fleetWord}`,
       submetric: `Выручка: ${formatCurrency(turnover?.logistics || 0)}`,
       badge: 'Логистика',
-      badgeVariant: 'secondary',
+      badgeVariant: 'sky',
       description: 'Собственные и наемные цементовозы. Учет путевых расходов: газ/топливо, запчасти, питание, зарплата водителя.'
     },
     {
@@ -69,8 +84,8 @@ export function ProcessGraph({ pipelineStats, turnover, profit, debts, onNavigat
       icon: Users,
       metric: `${formatNumber(turnover?.totalTonnage || 0)} т`,
       submetric: `Сделки: ${formatCurrency(turnover?.total || 0)}`,
-      badge: `${pipelineStats?.clients || 0} клиентов`,
-      badgeVariant: 'outline',
+      badge: `${clientCount} ${clientWord}`,
+      badgeVariant: 'lavender',
       description: 'Строительные организации, ЖБИ-заводы и оптовики. Оформление поставок с выбором условий оплаты.'
     },
     {
@@ -79,8 +94,8 @@ export function ProcessGraph({ pipelineStats, turnover, profit, debts, onNavigat
       icon: Wallet,
       metric: formatCurrency(profit?.total || 0),
       submetric: `Долги клиентов: ${formatCurrency(debts?.totalDebt || 0)}`,
-      badge: debts?.debtorsCount ? `${debts.debtorsCount} должников` : 'Баланс',
-      badgeVariant: debts?.totalDebt > 0 ? 'destructive' : 'secondary',
+      badge: debtorsCount > 0 ? `${debtorsCount} ${debtorsWord}` : 'Без долгов',
+      badgeVariant: debts?.totalDebt > 0 ? 'rose' : 'mint',
       description: 'Кассовый поток предприятия. Контроль дебиторской задолженности и погашение долговых обязательств.'
     }
   ];

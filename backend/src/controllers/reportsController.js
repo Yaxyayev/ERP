@@ -191,6 +191,11 @@ function getDashboardSummary(req, res) {
       FROM broker_account_logs
     `).get();
 
+    const totalProfit = cementProfit + logisticsProfit;
+    const marginPercent = turnoverStats.total_turnover > 0
+      ? Number(((totalProfit / turnoverStats.total_turnover) * 100).toFixed(1))
+      : 0;
+
     res.json({
       success: true,
       turnover: {
@@ -204,9 +209,10 @@ function getDashboardSummary(req, res) {
         bagAmount: turnoverStats.bag_amount
       },
       profit: {
-        total: cementProfit + logisticsProfit,
+        total: totalProfit,
         cementProfit,
         logisticsProfit,
+        marginPercent,
         logisticsExpense: totalLogisticsExpense,
         logisticsExpensesDetail: logisticsExpenses
       },

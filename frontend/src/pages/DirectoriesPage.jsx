@@ -421,7 +421,14 @@ export function DirectoriesPage() {
 
           {activeTab === 'vehicles' && (
             <>
-              <Input label="Гос. номер" required placeholder="01 A 777 AA" value={formData.plate_number || ''} onChange={e => setFormData({ ...formData, plate_number: e.target.value.toUpperCase() })} />
+              <Input
+                label="Гос. номер"
+                required
+                formatPlate
+                placeholder="01 123 AAA или 01 A 123 AA"
+                value={formData.plate_number || ''}
+                onChange={e => setFormData({ ...formData, plate_number: e.target.value })}
+              />
               <Input label="Марка / Модель" placeholder="HOWO / MAN" value={formData.model || ''} onChange={e => setFormData({ ...formData, model: e.target.value })} />
               <Input label="Водитель" value={formData.driver_name || ''} onChange={e => setFormData({ ...formData, driver_name: e.target.value })} />
               <Input label="Телефон водителя" value={formData.driver_phone || ''} onChange={e => setFormData({ ...formData, driver_phone: e.target.value })} />

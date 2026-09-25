@@ -320,9 +320,10 @@ export function ArrivalsPage() {
               {vehicleSelectionMode === 'custom' && (
                 <Input
                   type="text"
-                  placeholder="01 A 777 AA"
+                  formatPlate
+                  placeholder="01 123 AAA или 01 A 123 AA"
                   value={formData.vehicle_number}
-                  onChange={e => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
+                  onChange={e => setFormData({ ...formData, vehicle_number: e.target.value })}
                   className="mt-1"
                 />
               )}

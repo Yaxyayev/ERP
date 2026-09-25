@@ -1,8 +1,8 @@
 import React from 'react';
-import { cn, formatThousands, parseThousands } from '../../lib/utils';
+import { cn, formatThousands, parseThousands, formatPlateNumber } from '../../lib/utils';
 
 export const Input = React.forwardRef(
-  ({ className, type = 'text', label, error, helperText, formatSpaces, onChange, value, ...props }, ref) => {
+  ({ className, type = 'text', label, error, helperText, formatSpaces, formatPlate, onChange, value, ...props }, ref) => {
     const handleChange = (e) => {
       if (!onChange) return;
       if (formatSpaces) {
@@ -15,12 +15,26 @@ export const Input = React.forwardRef(
             name: props.name
           }
         });
+      } else if (formatPlate) {
+        const formatted = formatPlateNumber(e.target.value, value || '');
+        onChange({
+          ...e,
+          target: {
+            ...e.target,
+            value: formatted,
+            name: props.name
+          }
+        });
       } else {
         onChange(e);
       }
     };
 
-    const displayValue = formatSpaces ? formatThousands(value) : value;
+    const displayValue = formatSpaces
+      ? formatThousands(value)
+      : formatPlate
+      ? formatPlateNumber(value)
+      : value;
 
     return (
       <div className="w-full space-y-1">

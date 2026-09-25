@@ -39,7 +39,7 @@ import { DateRangePicker } from '../components/common/DateRangePicker';
 import { ChartDrilldownModal } from '../components/common/ChartDrilldownModal';
 import { ChartMaximizeModal } from '../components/common/ChartMaximizeModal';
 import { api } from '../api/client';
-import { formatCurrency, formatNumber, formatDate } from '../lib/utils';
+import { formatCurrency, formatNumber, formatDate, formatThousands } from '../lib/utils';
 import { exportToCsv, triggerPrint } from '../lib/exportUtils';
 
 export function SalesPage() {
@@ -1052,9 +1052,10 @@ export function SalesPage() {
                 <Input
                   type="text"
                   label="Гос. номер машины клиента (для ТТН / пропуска)"
-                  placeholder="01 A 777 AA"
+                  placeholder="01 123 AAA или 01 A 123 AA"
+                  formatPlate
                   value={formData.vehicle_number}
-                  onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value.toUpperCase() })}
+                  onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value })}
                 />
               </div>
             ) : (

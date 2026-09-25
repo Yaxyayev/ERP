@@ -93,14 +93,21 @@ export function GlobalSearchModal({ isOpen, onClose, onNavigate }) {
     !q || p.name.toLowerCase().includes(q) || (p.cement_grade && p.cement_grade.toLowerCase().includes(q))
   ).slice(0, 5);
 
+  const cleanQ = q ? q.replace(/\s+/g, '') : '';
+
   // 4. Машины
   const filteredVehicles = vehicles.filter(v =>
-    !q || v.plate_number.toLowerCase().includes(q) || (v.driver_name && v.driver_name.toLowerCase().includes(q)) || (v.model && v.model.toLowerCase().includes(q))
+    !q || v.plate_number.toLowerCase().includes(q) ||
+    (cleanQ && v.plate_number.replace(/\s+/g, '').toLowerCase().includes(cleanQ)) ||
+    (v.driver_name && v.driver_name.toLowerCase().includes(q)) ||
+    (v.model && v.model.toLowerCase().includes(q))
   ).slice(0, 5);
 
   // 5. Продажи / накладные
   const filteredSales = sales.filter(s =>
-    !q || String(s.id).includes(q) || (s.client_name && s.client_name.toLowerCase().includes(q)) || (s.vehicle_number && s.vehicle_number.toLowerCase().includes(q))
+    !q || String(s.id).includes(q) ||
+    (s.client_name && s.client_name.toLowerCase().includes(q)) ||
+    (s.vehicle_number && (s.vehicle_number.toLowerCase().includes(q) || (cleanQ && s.vehicle_number.replace(/\s+/g, '').toLowerCase().includes(cleanQ))))
   ).slice(0, 5);
 
   const hasResults = navigationItems.length > 0 || filteredClients.length > 0 || filteredProducts.length > 0 || filteredVehicles.length > 0 || filteredSales.length > 0;

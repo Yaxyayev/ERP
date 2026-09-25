@@ -342,15 +342,15 @@ export function FinancePage() {
       tableData: transactions,
       columns: [
         { key: 'date', label: 'Дата ордера', render: (v) => formatDate(v) },
-        { key: 'type', label: 'Тип', align: 'center', render: (v) => (
-          <Badge variant={v === 'income' ? 'success' : 'destructive'} className="text-[10px]">
+        { key: 'transaction_type', label: 'Тип', align: 'center', render: (v) => (
+          <Badge variant={v === 'income' ? 'mint' : 'rose'} className="text-[10px]">
             {v === 'income' ? 'Приход' : 'Расход'}
           </Badge>
         )},
         { key: 'category', label: 'Категория', render: (v) => catNames[v] || v || 'Основная' },
-        { key: 'amount', label: 'Сумма (сум)', align: 'right', render: (v, r) => (
-          <span className={`font-bold ${r.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-            {r.type === 'income' ? '+' : '-'}{formatCurrency(v)}
+        { key: 'amount_uzs', label: 'Сумма (сум)', align: 'right', render: (v, r) => (
+          <span className={`font-bold ${r.transaction_type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+            {r.transaction_type === 'income' ? '+' : '-'}{formatCurrency(v)}
           </span>
         )},
         { key: 'comment', label: 'Примечание / Основание', render: (v) => <span className="text-muted-foreground">{v || '—'}</span> }
@@ -361,7 +361,7 @@ export function FinancePage() {
   const handleMaximizeExpenses = () => {
     const totalExp = summary?.totalExpense || 0;
     const topExp = [...expensePieData].sort((a, b) => b.value - a.value)[0] || { name: '—', value: 0 };
-    const expCount = transactions.filter(t => t.type === 'expense').length;
+    const expCount = transactions.filter(t => t.transaction_type === 'expense').length;
 
     setMaximizeModal({
       isOpen: true,
@@ -401,7 +401,7 @@ export function FinancePage() {
       tableData: expensePieData.map(e => ({
         ...e,
         share: totalExp ? ((e.value / totalExp) * 100).toFixed(1) : 0,
-        ordersCount: transactions.filter(t => t.type === 'expense' && (catNames[t.category] === e.name || t.category === e.name)).length
+        ordersCount: transactions.filter(t => t.transaction_type === 'expense' && (catNames[t.category] === e.name || t.category === e.name)).length
       })),
       columns: [
         { key: 'name', label: 'Статья затрат', render: (v, r) => (
