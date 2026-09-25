@@ -342,6 +342,19 @@ export function FinancePage() {
       color: catColors[k] || '#8b5cf6'
     }));
 
+  const topDebtorsChartData = (debts || [])
+    .filter(d => (d.debt_amount || 0) > 0)
+    .slice(0, 6)
+    .map((d, index) => {
+      const colors = ['#f43f5e', '#ec4899', '#f97316', '#eab308', '#8b5cf6', '#6366f1'];
+      return {
+        name: (d.name || '').replace('ООО ', '').replace('ИП ', '').replace(/«|»/g, ''),
+        fullName: d.name,
+        debt: d.debt_amount || 0,
+        fill: colors[index % colors.length]
+      };
+    });
+
   // ==================== MAXIMIZE HANDLERS ====================
   const handleMaximizeCashFlow = () => {
     const inc = summary?.totalIncome || 0;
